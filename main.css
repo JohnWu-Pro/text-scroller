@@ -201,6 +201,7 @@ body {
   padding: 1vmin;
   resize: none;
   width: 88%;
+  min-width: max-content;
 }
 
 .settings-content {
@@ -225,7 +226,7 @@ body {
   width: 72%;
 }
 div.color > div.label > input {
-  width: 8vmin;
+  width: 10vmin;
 }
 div.input > span {
   white-space: nowrap;
