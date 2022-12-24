@@ -274,7 +274,7 @@ div.input > span > span.blue {
 }
 @media (orientation: portrait) {
   .overlay {
-    left: 0; top: calc(100vh - 80vmin);
+    left: 0; top: calc(100dvh - 80vmin);
     width: 100vmin; height: 80vmin;
   }
 
