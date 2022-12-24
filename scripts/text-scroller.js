@@ -97,7 +97,7 @@ window.TextScroller = window.TextScroller ?? (() => {
       div.style[this.#position] = this.#container['offset'+this.#dimension] + 'px'
 
       const base = Config.fullScreenScrollingMillis * Settings.DEFAULT.speed / Settings.instance.speed
-      const duration = base * (1 + div['scroll'+this.#dimension] / this.#container['offset'+this.#dimension])
+      const duration = Math.round(base * (1 + div['scroll'+this.#dimension] / this.#container['offset'+this.#dimension]))
       this.#rootStyle.setProperty('--scrolling-duration', duration + 'ms')
       this.#rootStyle.setProperty('--scrolling-offset', (-this.#container['offset'+this.#dimension] - div['scroll'+this.#dimension]) + 'px')
     }
