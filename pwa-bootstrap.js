@@ -112,7 +112,7 @@ if(navigator.serviceWorker) {
   const pos = HREF_BASE.lastIndexOf('/')
   const base = HREF_BASE.substring(0, pos)
   const locale = HREF_BASE.substring(pos + 1)
-  const servieWorkerUrl = `${base}/service-worker.js?${versionOf(currentScript)}&locale=${locale}`
+  const servieWorkerUrl = `${base}/service-worker.js?locale=${locale}`
   // console.debug("[DEBUG] Going to regiester the service worker at %s ...", servieWorkerUrl)
   navigator.serviceWorker.register(servieWorkerUrl)
 } else {

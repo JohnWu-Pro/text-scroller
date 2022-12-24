@@ -9,7 +9,7 @@ function onBeforePrompt(event) {
   event.preventDefault()
   promptEvent = event
 
-  show()
+  InstallPromptStats.triggerNowOrSchedule(show)
 }
 
 function onClick() {
@@ -28,8 +28,9 @@ function onClick() {
   event.prompt()
     .then(() => event.userChoice)
     .then(choice => {
-      // either "accepted" or "dismissed"
-      console.info("[INFO] Install prompt user choice: %s", choice.outcome)
+      const outcome = choice.outcome // 'accepted' or 'dismissed'
+      console.info("[INFO] Install prompt user choice: %s", outcome)
+      window.dispatchEvent(new CustomEvent('install-prompt-responded', {detail: {outcome}}))
     })
     .then(onAfterPrompted)
 }
@@ -133,4 +134,53 @@ function css() { return `
 
 return {onBeforePrompt, onAfterPrompted}
 
+})()
+
+window.InstallPromptStats = window.InstallPromptStats ?? (() => {
+  const RETRY_INTERVAL_MINUTES = [3, 15, 60, 1440, 1440*3]
+  const DEFAULT = Object.freeze({
+    nextPromptTime: null,
+    promptedCount: 0
+  })
+  const KEY = location.origin + location.pathname + '#InstallPromptStats'
+
+  function onAccepted() {
+    localStorage.removeItem(KEY)
+  }
+
+  function onDismissed() {
+    const stats = load()
+    let index = stats.promptedCount++
+    if(index >= RETRY_INTERVAL_MINUTES.length) index = RETRY_INTERVAL_MINUTES.length-1
+    stats.nextPromptTime = Date.now() + RETRY_INTERVAL_MINUTES[index] * 60000
+    save(stats)
+  }
+
+  function triggerNowOrSchedule(prompt) {
+    const currentTimestamp = Date.now()
+    const stats = load()
+    if(stats.nextPromptTime <= currentTimestamp) {
+      prompt()
+    } else {
+      delay(stats.nextPromptTime - currentTimestamp).then(prompt)
+    }
+  }
+
+  function load() {
+    const stats = localStorage.getItem(KEY)
+    return stats ? JSON.parse(stats) : {...DEFAULT}
+  }
+
+  function save(stats) {
+    localStorage.setItem(KEY, JSON.stringify(stats))
+  }
+
+  window.addEventListener("install-prompt-responded", (event) => {
+    if(event.detail.outcome === 'accepted')
+      onAccepted()
+    else
+      onDismissed()
+  })
+
+  return {triggerNowOrSchedule}
 })()

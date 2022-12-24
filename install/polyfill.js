@@ -17,7 +17,7 @@ if(!('onbeforeinstallprompt' in window)) {
       preventDefault: () => {},
       prompt: () => Promise.resolve(
         InstallDemo.show()
-        .then(() => choice.outcome = "accepted")
+            .then(() => choice.outcome = "dismissed")
       ),
       userChoice: Promise.resolve(choice)
     })

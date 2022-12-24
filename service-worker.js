@@ -9,17 +9,17 @@
 
 const APP_ID = 'text-scroller'
 
-const CONTEXT_PATH = resolveContextPath()
-const INDEX_HTML = `${CONTEXT_PATH}/index.html`
-console.debug("[DEBUG] ServiceWorker :: location: %o, CONTEXT_PATH: %s", location, CONTEXT_PATH)
-
-const CACHE_NAME = 'cache.' + APP_ID + '.resources'
-
-function resolveContextPath() {
+const CONTEXT_PATH = (() => {
+  // NOTE: location.href points to the location of this script
   const contextPath = location.pathname.substring(0, location.pathname.lastIndexOf('/'))
   const locale = new URLSearchParams(location.search).get('locale')
   return locale ? contextPath + '/' + locale : contextPath
-}
+})()
+// console.debug("[DEBUG] [ServiceWorker] CONTEXT_PATH: %s, location: %o", CONTEXT_PATH, location)
+
+const INDEX_HTML = `${CONTEXT_PATH}/index.html`
+
+const CACHE_NAME = 'cache.' + APP_ID + '.resources'
 
 self.addEventListener('install', function(event) {
   // console.debug("[DEBUG] Calling ServiceWorker.install(%o) ...", event)
@@ -51,7 +51,7 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('fetch', function(event) {
   // console.debug("[DEBUG] Calling ServiceWorker.fetch(%o) ...", event.request)
 
-  if(event.request.method !== "GET") {
+  if(event.request.method !== 'GET') {
     // For non-GET requests, let the browser do its default thing
     return
   }
