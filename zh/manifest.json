@@ -1,0 +1,38 @@
+{
+  "name": "闪屏弹幕",
+  "short_name": "闪屏弹幕",
+  "description": "可安装并离线运行的闪屏弹幕",
+  "categories": ["工具", "弹幕", "滚屏"],
+  "id": "/text-scroller/zh/index.html",
+  "start_url": "/text-scroller/zh/index.html?mode=fullscreen",
+  "scope": "/text-scroller/",
+  "related_applications": [{
+    "platform": "webapp",
+    "url": "https://ejfun.natapp4.cc/text-scroller/zh/manifest.json"
+  },{
+    "platform": "webapp",
+    "url": "https://johnwu-pro.github.io/text-scroller/zh/manifest.json"
+  }],
+  "display": "fullscreen",
+  "background_color": "#f8f8ff",
+  "theme_color": "#f8fff8",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "images/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    },{
+      "src": "images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },{
+      "src": "images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

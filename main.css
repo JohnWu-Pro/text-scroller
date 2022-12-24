@@ -1,0 +1,294 @@
+* {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --default-font-family: unset;
+  --main-font-family: var(--default-font-family, 'New Times Roman');
+
+  --size-1vmin: 1vmin;
+  --size-1vmax: 1vmax;
+
+  --scroller-background-color: unset;
+  --scroller-font-color: unset;
+  --scroller-font-size: unset;
+  --scrolling-duration: unset;
+  --scrolling-offset: unset;
+}
+
+body {
+  position: static;
+  z-index: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.scroller-background {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--scroller-background-color);
+}
+
+.scroller-container {
+  overflow: hidden;
+}
+
+.scroller-content {
+  font-family: var(--main-font-family);
+  font-size: var(--scroller-font-size);
+  color: var(--scroller-font-color);
+  text-overflow: clip;
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+}
+
+.scroller-content.slide {
+  transition: transform var(--scrolling-duration) linear;
+}
+
+@media (orientation: landscape) {
+  .scroller-background {
+    display: flex;
+    align-items: center;
+  }
+
+  .scroller-container {
+    width: 100vw;
+  }
+
+  .scroller-content {
+    padding: 0 calc(var(--scroller-font-size) / 4) calc(var(--scroller-font-size) / 10) calc(var(--scroller-font-size) / 4);
+  }
+
+  .scroller-content.slide {
+    transform: translateX(var(--scrolling-offset));
+  }
+}
+@media (orientation: portrait) {
+  .scroller-container {
+    height: 100vh;
+  }
+
+  .scroller-content {
+    margin: 0 auto;
+    padding: calc(var(--scroller-font-size) / 4) 0 calc(var(--scroller-font-size) / 4) calc(var(--scroller-font-size) / 10);
+    text-orientation: sideways;
+    writing-mode: vertical-rl;
+  }
+
+  .scroller-content.slide {
+    transform: translateY(var(--scrolling-offset));
+  }
+}
+
+.menu-overlay {
+  z-index: 20; position: absolute;
+  left: calc(100vw - 12vmin - 2vmin); top: 2vmin;
+  width: 12vmin; height: 12vmin;
+}
+.menu {
+  color: var(--scroller-background-color);
+  filter: invert(1);
+  font-size: 8vmin;
+  border: 1px dashed black;
+  border-radius: 2vmin;
+  padding: 0 0 0.8vmin 2.4vmin;
+}
+.menu::after {
+  content: '☰';
+}
+
+.overlay {
+  z-index: 10; position: absolute;
+}
+.overlay > div {
+  height: calc(100% - 4px);
+  background-color: rgb(8, 8, 192);
+  opacity: 0.92;
+  border: 2px solid grey;
+  border-radius: 1vmin;
+}
+
+.settings-view {
+  font-family: var(--main-font-family);
+}
+
+.settings-view,
+.settings-tab {
+  display: flex;
+}
+
+.settings-tabs {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.settings-view > :first-child,
+.settings-tab > :first-child {
+  flex-basis: 80%;
+}
+.settings-view > :last-child {
+  flex-basis: 18%;
+}
+
+.settings-tab {
+  border: none;
+  border-radius: 2vmin;
+  background-color: #eff7fc;
+}
+
+.settings-tab.text > .tab-icon::after {
+  content: '🖹';
+}
+.settings-tab.foreground > .tab-icon::after {
+  content: '🎨';
+}
+.settings-tab.background > .tab-icon::after {
+  content: '░';
+}
+.settings-tab.more > .tab-icon::after {
+  content: 'ⓘ';
+}
+
+.tab-icon {
+  display: flex;
+  align-items: center;
+}
+.tab-icon::after {
+  margin: auto;
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.tab-label {
+  color: gray;
+}
+.settings-tab.selected,
+.settings-tab.selected > .tab-label {
+  color: blue;
+  font-weight: bold;
+}
+
+.settings-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.settings-content.text {
+  justify-content: center;
+}
+.settings-content.text button {
+  border: 1px outset grey;
+  border-radius: 2vmin;
+  background-color: #eff7fc;
+  padding: 1vmin 4vmin;
+  font-size: x-large;
+}
+.settings-content.text textarea {
+  border: none;
+  border-radius: 1vmin;
+  font-size: x-large;
+  margin: 3vmin auto;
+  padding: 1vmin;
+  resize: none;
+  width: 88%;
+}
+
+.settings-content {
+  color: white;
+  font-size: large;
+  font-weight: bold;
+}
+
+.settings-content div.label {
+  margin: 0 1vmin 0 4vmin;
+  text-align: left;
+}
+
+.settings-content input {
+  color: white;
+  background: transparent;
+  font-size: large;
+}
+
+.settings-content input[type="range"] {
+  padding: 1.5vmin 0;
+  width: 72%;
+}
+div.color > div.label > input {
+  width: 8vmin;
+}
+div.input > span {
+  white-space: nowrap;
+}
+div.input > span > span {
+  background-color: white;
+  border: none;
+  border-radius: 1vmin;
+  padding: 0 1vmin;
+  margin-right: 0.5vmin;
+  position: relative;
+  top: -2vmin;
+}
+div.input > span > span.red {
+  color: red;
+}
+div.input > span > span.green {
+  color: green;
+}
+div.input > span > span.blue {
+  color: blue;
+}
+
+@media (orientation: landscape) {
+  .overlay {
+    left: calc(100vw - 80vmin); top: 0;
+    width: 80vmin; height: 100vmin;
+  }
+
+  .settings-view {
+    padding-right: 2vmin;
+  }
+  .settings-view,
+  .settings-tab {
+    flex-direction: row;
+  }
+
+  .settings-tabs {
+    flex-direction: column;
+  }
+
+  .tab-label {
+    text-orientation: mixed;
+    padding: 2vmin 0;
+  }
+}
+@media (orientation: portrait) {
+  .overlay {
+    left: 0; top: calc(100vh - 80vmin);
+    width: 100vmin; height: 80vmin;
+  }
+
+  .settings-view {
+    padding-bottom: 2vmin;
+  }
+  .settings-view,
+  .settings-tab {
+    flex-direction: column;
+  }
+
+  .settings-tabs {
+    flex-direction: row;
+  }
+
+  .tab-label {
+    padding: 0 4vmin;
+  }
+}
