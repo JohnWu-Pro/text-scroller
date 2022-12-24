@@ -271,26 +271,6 @@ div.label > label[for="bg-image"] {
   padding: 1vmin 2vmin;
 }
 
-div.label > .spacer {
-  margin: 0 0.4vmin;
-}
-div.label > .orientation {
-  padding: 0 1vmin;
-}
-div.label > .orientation > span {
-  border: none;
-  border-radius: 1vmin;
-  background-color: #eff7fc;
-  color: gray;
-  font-weight: normal;
-  padding: 1vmin 1.5vmin;
-}
-div.label > .orientation > span.selected {
-  color: blue;
-  font-weight: bold;
-  outline: 2px outset darkgray;
-}
-
 @media (orientation: landscape) {
   .overlay {
     left: calc(100vw - 100vmin); top: 0;
