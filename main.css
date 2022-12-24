@@ -62,7 +62,7 @@ body {
   }
 
   .scroller-content {
-    padding: 0 calc(var(--scroller-font-size) / 4) calc(var(--scroller-font-size) / 10) calc(var(--scroller-font-size) / 4);
+    padding: 0 calc(var(--scroller-font-size) / 4) 0 calc(var(--scroller-font-size) / 4);
   }
 
   .scroller-content.slide {
@@ -72,11 +72,13 @@ body {
 @media (orientation: portrait) {
   .scroller-container {
     height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
   }
 
   .scroller-content {
-    margin: 0 auto;
-    padding: calc(var(--scroller-font-size) / 4) 0 calc(var(--scroller-font-size) / 4) calc(var(--scroller-font-size) / 10);
+    padding: calc(var(--scroller-font-size) / 4) 0 calc(var(--scroller-font-size) / 4) 0;
     text-orientation: sideways;
     writing-mode: vertical-rl;
   }
