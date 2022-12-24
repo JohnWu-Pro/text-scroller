@@ -1,13 +1,25 @@
 'use strict';
 
+//
+// CAUTION:
+// This script should be placed in the directory where the `index.html` resides, or its parent directory,
+// so that the script location resolution can work as expected.
+//
 (() => {
 
 const APP_ID = 'text-scroller'
 
-const CONTEXT_PATH = location.pathname.substring(0, location.pathname.lastIndexOf('/'))
+const CONTEXT_PATH = resolveContextPath()
 const INDEX_HTML = `${CONTEXT_PATH}/index.html`
+console.debug("[DEBUG] ServiceWorker :: location: %o, CONTEXT_PATH: %s", location, CONTEXT_PATH)
 
 const CACHE_NAME = 'cache.' + APP_ID + '.resources'
+
+function resolveContextPath() {
+  const contextPath = location.pathname.substring(0, location.pathname.lastIndexOf('/'))
+  const locale = new URLSearchParams(location.search).get('locale')
+  return locale ? contextPath + '/' + locale : contextPath
+}
 
 self.addEventListener('install', function(event) {
   // console.debug("[DEBUG] Calling ServiceWorker.install(%o) ...", event)
@@ -91,7 +103,7 @@ async function cacheStaticResources() {
 
     const indexHtml = await response.clone().text()
     const resources = resolveStaticCachableResources(indexHtml)
-    // console.debug("[DEBUG] Static cachable resources: %o", resources)
+    console.debug("[DEBUG] Static cachable resources: %o", resources)
     return await cache.addAll(resources)
   } else {
     console.error("[ERROR] Failed in loading %s: %o", INDEX_HTML, response)

@@ -5,7 +5,7 @@ https://play.google.com/store/apps/details?id=com.ttnnapps.LedTextDisplay&hl=en_
 # TODOs
 v Text
    + Tweak icon
-   + Position in Firefox
+   v Position in Firefox
 v Foreground
    v Color
    v Scrolling Speed
@@ -23,6 +23,7 @@ v Background
 v Full screen
 v Landscape orientation
 v Configuration panel dock to bottom (portrait) or right (landscape)
+   + Sliding in configuration panel
 v Auto hide configuration panel
 v Save settings
 

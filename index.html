@@ -3,12 +3,21 @@
 <head>
   <meta charset="utf-8">
   <script>
-    const SUPPORTED_LANGUAGES = new Set(['en', 'zh'])
-    let lang = navigator.language.substring(0, 2)
-    if(!SUPPORTED_LANGUAGES.has(lang)) lang = 'en'
+    const FALLBACK_LOCALE = 'en'
+    const SUPPORTED_LOCALES = new Set([FALLBACK_LOCALE, 'zh-CN'])
+
+    function resolveNavigatorLocale() {
+      return navigator.language.replace(/^([a-z]{2})(?:-[a-z]+)??-([A-Z]{2})$/, '$1-$2')
+    }
+
+    let locale = resolveNavigatorLocale()
+    if(!SUPPORTED_LOCALES.has(locale)) {
+      locale = locale.substring(0, 2)
+      if(!SUPPORTED_LOCALES.has(locale)) locale = FALLBACK_LOCALE
+    }
 
     const {origin, pathname, search} = window.location
-    const target = origin + pathname.substring(0, pathname.lastIndexOf('/')) + `/${lang}/index.html${search}`
+    const target = origin + pathname.substring(0, pathname.lastIndexOf('/')) + `/${locale}/index.html${search}`
     // console.debug("[DEBUG] Redirecting to %s ...", target)
     window.location.href = target
   </script>

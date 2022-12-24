@@ -106,9 +106,9 @@ class Settings {
             <div class="color">
               <div class="label">
                 <span>${T('settings.color.label')}:</span>
-                <span>${T('settings.color.red')}</span><input name="red" type="text" readonly size="3" value="${Settings.instance.foreground.color.red}">
-                <span>${T('settings.color.green')}</span><input name="green" type="text" readonly size="3" value="${Settings.instance.foreground.color.green}">
-                <span>${T('settings.color.blue')}</span><input name="blue" type="text" readonly size="3" value="${Settings.instance.foreground.color.blue}">
+                <span>${T('settings.color.red')}</span><input name="red" type="text" disabled size="3" value="${Settings.instance.foreground.color.red}">
+                <span>${T('settings.color.green')}</span><input name="green" type="text" disabled size="3" value="${Settings.instance.foreground.color.green}">
+                <span>${T('settings.color.blue')}</span><input name="blue" type="text" disabled size="3" value="${Settings.instance.foreground.color.blue}">
               </div>
               <div class="input">
                 <span><span class="red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${Settings.instance.foreground.color.red}"></span>
@@ -153,9 +153,9 @@ class Settings {
             <div class="color">
               <div class="label">
                 <span>${T('settings.color.label')}:</span>
-                <span>${T('settings.color.red')}</span><input name="red" type="text" readonly size="3" value="${Settings.instance.background.color.red}">
-                <span>${T('settings.color.green')}</span><input name="green" type="text" readonly size="3" value="${Settings.instance.background.color.green}">
-                <span>${T('settings.color.blue')}</span><input name="blue" type="text" readonly size="3" value="${Settings.instance.background.color.blue}">
+                <span>${T('settings.color.red')}</span><input name="red" type="text" disabled size="3" value="${Settings.instance.background.color.red}">
+                <span>${T('settings.color.green')}</span><input name="green" type="text" disabled size="3" value="${Settings.instance.background.color.green}">
+                <span>${T('settings.color.blue')}</span><input name="blue" type="text" disabled size="3" value="${Settings.instance.background.color.blue}">
               </div>
               <div class="input">
                 <span><span class="red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${Settings.instance.background.color.red}"></span>

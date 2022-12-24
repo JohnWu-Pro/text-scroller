@@ -22,3 +22,7 @@ function contextPath(location) {
 function versionOf(script) {
   return (new URL(script.src).search ?? '').replace(/^\?(?:v=)?/, '')
 }
+
+function resolveNavigatorLocale() {
+  return navigator.language.replace(/^([a-z]{2})(?:-[a-z]+)??-([A-Z]{2})$/, '$1-$2')
+}
