@@ -4,21 +4,23 @@ https://play.google.com/store/apps/details?id=com.ttnnapps.LedTextDisplay&hl=en_
 
 # TODOs
 v Text
-   + Tweak icon
+   v Tweak icon
    v Position in Firefox
 v Foreground
    v Color
    v Scrolling Speed
    v Size
-   + Neon / Glow Effect, Frequency
-v Background 
+   + Glow Effect, Frequency
+v Background
    v Color
-   + Image
-? What if the site is not responding
+   v Image
+v What if the site is not responding
 + Refine icons and favicon
 + English version
-+ Share via barcode
-+ Refine Add to Home Screen (less aggressive)
++ More
+   + Share via barcode
+   + Copyright and license
+v Refine Add to Home Screen (less aggressive)
 
 v Full screen
 v Landscape orientation

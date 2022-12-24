@@ -18,12 +18,16 @@ class Settings {
     }),
 
     background: Object.freeze({
+      use: 'color', // color | image
       color: Object.freeze({
-        red: 64,   // 0..255
-        green: 64, // 0..255
-        blue: 192  // 0..255
+        red: 64,    // 0..255
+        green: 64,  // 0..255
+        blue: 192   // 0..255
       }),
-      url: '', // TODO
+      image: {
+        url: '',
+        orientation: 'up' // left | up | right | down
+      },
     })
   })
 
@@ -42,6 +46,20 @@ class Settings {
 
   static rgb(color) {
     return `rgb(${color.red},${color.green},${color.blue})`
+  }
+
+  static setBackground(rootStyle) {
+    if(Settings.instance.background.use === 'image') {
+      const color = Settings.rgb(Settings.DEFAULT.background.color)
+      rootStyle.setProperty('--scroller-background-color', color)
+      // TODO Build background style based on image settings
+      let background = `url("${Settings.instance.background.image.url}") center / cover no-repeat`
+      rootStyle.setProperty('--scroller-background', background)
+    } else {
+      const color = Settings.rgb(Settings.instance.background.color)
+      rootStyle.setProperty('--scroller-background-color', color)
+      rootStyle.setProperty('--scroller-background', color)
+    }
   }
 
   static View = (() => {
@@ -147,11 +165,22 @@ class Settings {
           })
         }
       },
+      glow: {
+        renderWithin(div) {
+          div.innerHTML = `
+            <div>
+            </div>
+            <div>
+            </div>
+          `
+        }
+      },
       background: {
         renderWithin(div) {
           div.innerHTML = `
             <div class="color">
               <div class="label">
+                <input type="radio" name="use" value="color" ${Settings.instance.background.use==='color' ? 'checked' : ''}>
                 <span>${T('settings.color.label')}:</span>
                 <span>${T('settings.color.red')}</span><input name="red" type="text" disabled size="3" value="${Settings.instance.background.color.red}">
                 <span>${T('settings.color.green')}</span><input name="green" type="text" disabled size="3" value="${Settings.instance.background.color.green}">
@@ -163,13 +192,61 @@ class Settings {
                 <span><span class="blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${Settings.instance.background.color.blue}"></span>
               </div>
             </div>
+            <div class="image">
+              <div class="label">
+                <input type="radio" name="use" value="image" ${Settings.instance.background.use==='image' ? 'checked' : ''}>
+                <span>${T('settings.image.label')}:</span>
+                <label for="bg-image">${T('settings.image.select.label')}</label>
+                <br/>
+                <br/>
+                <span class="spacer">&nbsp;</span><span>${T('settings.image.orientation.label')}:</span>
+                <span class="orientation">
+                  <span data-value="left">⮘</span>
+                  <span data-value="up">⮙</span>
+                  <span data-value="right">⮚</span>
+                  <span data-value="down">⮛</span>
+                </span>
+              </div>
+              <div class="input">
+                <input type="file" id="bg-image" accept="image/*" class="visually-hidden">
+              </div>
+            </div>
           `
+          $A('.background input[type="radio"]', div).forEach((input, _, inputs) => {
+            input.addEventListener('change', function() {
+              inputs.forEach((it) => {
+                if(it.checked) Settings.instance.background.use = it.value
+              })
+              Settings.setBackground(rootStyle)
+            })
+          })
           $A('.color input[type="range"]', div).forEach((input) => {
             input.addEventListener('change', function() {
               const value = Color.valueOf(Number.parseInt(this.value))
               $E(`input[name="${this.className}"]`, div).value = value
               Settings.instance.background.color[this.className] = value
-              rootStyle.setProperty('--scroller-background-color', Settings.rgb(Settings.instance.background.color))
+              Settings.setBackground(rootStyle)
+            })
+          })
+          $E('.image input[type="file"]', div).addEventListener('change', function() {
+            const file = this.files[0]
+            const reader = new FileReader()
+            reader.onload = (event) => {
+              Settings.instance.background.image.url = event.target.result
+              Settings.setBackground(rootStyle)
+            }
+            reader.readAsDataURL(file)
+          })
+          const orientation = Settings.instance.background.image.orientation
+          const orientations = $A('.orientation > span', div)
+          orientations.forEach((span) => {
+            if(span.dataset.value === orientation) span.classList.add('selected')
+
+            span.addEventListener('click', function() {
+              orientations.forEach((it) => it.classList.remove('selected'))
+              this.classList.add('selected')
+              Settings.instance.background.image.orientation = this.dataset.value
+              Settings.setBackground(rootStyle)
             })
           })
         }

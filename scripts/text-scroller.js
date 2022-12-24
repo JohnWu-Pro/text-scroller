@@ -12,7 +12,7 @@ window.TextScroller = window.TextScroller ?? (() => {
     `
 
     const rootStyle = $E(':root').style
-    rootStyle.setProperty('--scroller-background-color', Settings.rgb(Settings.instance.background.color))
+    Settings.setBackground(rootStyle)
     rootStyle.setProperty('--scroller-font-color', Settings.rgb(Settings.instance.foreground.color))
     rootStyle.setProperty('--scroller-font-size', Settings.instance.foreground.size + 'vmin')
 

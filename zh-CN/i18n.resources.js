@@ -8,6 +8,7 @@ values: {
   "settings.default.text": "闪屏弹幕 演示文本",
   "settings.tab-label.text": "文本",
   "settings.tab-label.foreground": "前景",
+  "settings.tab-label.glow": "光晕",
   "settings.tab-label.background": "背景",
   "settings.tab-label.more": "更多",
 
@@ -20,6 +21,9 @@ values: {
   "settings.color.red": "红",
   "settings.color.green": "绿",
   "settings.color.blue": "蓝",
+  "settings.image.label": "图片",
+  "settings.image.select.label": "选取...",
+  "settings.image.orientation.label": "朝向",
 
   "install.add-to-home-screen": "安装到桌面",
   "install.demo.acknowledge": "已了解!",

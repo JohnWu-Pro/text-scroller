@@ -8,9 +8,7 @@
   --default-font-family: unset;
   --main-font-family: var(--default-font-family, 'New Times Roman');
 
-  --size-1vmin: 1vmin;
-  --size-1vmax: 1vmax;
-
+  --scroller-background: unset;
   --scroller-background-color: unset;
   --scroller-font-color: unset;
   --scroller-font-size: unset;
@@ -30,7 +28,7 @@ body {
 .scroller-background {
   width: 100vw;
   height: 100vh;
-  background-color: var(--scroller-background-color);
+  background: var(--scroller-background);
 }
 
 .scroller-container {
@@ -145,13 +143,18 @@ body {
 }
 
 .settings-tab.text > .tab-icon::after {
-  content: '🖹';
+  /* 🖹📝💬 */
+  content: '💬';
 }
 .settings-tab.foreground > .tab-icon::after {
   content: '🎨';
 }
+.settings-tab.glow > .tab-icon::after {
+  /* 💗✨🌟 */
+  content: '✨';
+}
 .settings-tab.background > .tab-icon::after {
-  content: '░';
+  content: '░░';
 }
 .settings-tab.more > .tab-icon::after {
   content: 'ⓘ';
@@ -225,7 +228,7 @@ body {
   padding: 1.5vmin 0;
   width: 72%;
 }
-div.color > div.label > input {
+div.color > div.label > input[type="text"] {
   width: 10vmin;
 }
 div.input > span {
@@ -250,6 +253,42 @@ div.input > span > span.blue {
 }
 div.input > span > input {
   vertical-align: bottom;
+}
+
+div.input > input.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip-path: circle(0);
+}
+div.label > label[for="bg-image"] {
+  border: 1px outset darkgray;
+  border-radius: 1vmin;
+  background-color: #eff7fc;
+  color: blue;
+  margin-left: 1vmin;
+  padding: 1vmin 2vmin;
+}
+
+div.label > .spacer {
+  margin: 0 0.4vmin;
+}
+div.label > .orientation {
+  padding: 0 1vmin;
+}
+div.label > .orientation > span {
+  border: none;
+  border-radius: 1vmin;
+  background-color: #eff7fc;
+  color: gray;
+  font-weight: normal;
+  padding: 1vmin 1.5vmin;
+}
+div.label > .orientation > span.selected {
+  color: blue;
+  font-weight: bold;
+  outline: 2px outset darkgray;
 }
 
 @media (orientation: landscape) {
