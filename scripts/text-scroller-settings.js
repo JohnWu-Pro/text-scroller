@@ -25,7 +25,7 @@ class Settings {
         green: 255, // 0..255
         blue: 128   // 0..255
       }),
-      interval: 0,// [0:OFF, 1..10..100] x 100ms --log()--> [-step, 0..1..2]
+      interval: 1000,// [0:OFF, 1..10..100] x 100ms --log()--> [-step, 0..1..2]
     }),
 
     background: Object.freeze({
@@ -69,7 +69,7 @@ class Settings {
     const colors = settings.glow.use === 'foreground'
         ? Array(Settings.#COLOR_RATIOS.length).fill(settings.foreground.color)
         : Settings.#COLOR_RATIOS.map(ratio => Settings.#Color.interpolate(settings.foreground.color, settings.glow.color, ratio))
-    rootStyle.setProperty('--text-shadow', sizes.map((size, index) => `0 0 ${size}vmin ${Settings.rgb(colors[index])}`).join())
+    rootStyle.setProperty('--text-shadow', sizes.map((size, index) => `0 0 ${size}vmin ${Settings.rgb(colors[index])}`).join(', '))
     rootStyle.setProperty('--animation-duration', settings.glow.interval + 'ms')
     content.classList.add(settings.glow.interval > 0 ? 'shadow-animation' : 'static-shadow')
   }
