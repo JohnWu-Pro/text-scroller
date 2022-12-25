@@ -12,7 +12,7 @@ window.TextScroller = window.TextScroller ?? (() => {
     `
 
     const rootStyle = $E(':root').style
-    Settings.setBackground(rootStyle)
+    Settings.applyBackground(rootStyle)
     rootStyle.setProperty('--scroller-font-color', Settings.rgb(Settings.instance.foreground.color))
     rootStyle.setProperty('--scroller-font-size', Settings.instance.foreground.size + 'vmin')
 
@@ -71,6 +71,7 @@ window.TextScroller = window.TextScroller ?? (() => {
         <div class="scroller-content hidden">${Settings.instance.text || T('settings.default.text')}</div>
       `
 
+      Settings.applyGlowEffect(this.#rootStyle)
       this.#rolling($E('div.scroller-content', this.#container))
     }
 

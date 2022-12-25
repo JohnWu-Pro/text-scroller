@@ -14,6 +14,9 @@
   --scroller-font-size: unset;
   --scrolling-duration: unset;
   --scrolling-offset: unset;
+
+  --text-shadow: unset;
+  --animation-duration: 0ms;
 }
 
 body {
@@ -43,6 +46,21 @@ body {
   white-space: nowrap;
   position: relative;
   user-select: none;
+}
+.scroller-content.shadow-animation {
+  animation: flicker var(--animation-duration) infinite alternate;
+}
+.scroller-content.static-shadow {
+  text-shadow: var(--text-shadow);
+}
+
+@keyframes flicker {
+  0%, 33% {
+    text-shadow: var(--text-shadow)
+  }
+  100% {       
+    text-shadow: none;
+  }
 }
 
 .scroller-content.slide {
