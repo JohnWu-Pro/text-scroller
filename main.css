@@ -17,6 +17,12 @@
 
   --text-shadow: unset;
   --animation-duration: 0ms;
+
+  --active-color: green;
+  --button-color: #eff7fc;
+  --disabled-color: grey;
+  --hint-color: palegreen;
+  --label-color: white;
 }
 
 body {
@@ -32,10 +38,6 @@ body {
   width: 100vw;
   height: 100vh;
   background: var(--scroller-background);
-}
-
-.scroller-container {
-  overflow: hidden;
 }
 
 .scroller-content {
@@ -74,6 +76,7 @@ body {
   }
 
   .scroller-container {
+    overflow-x: hidden;
     width: 100vw;
   }
 
@@ -87,6 +90,7 @@ body {
 }
 @media (orientation: portrait) {
   .scroller-container {
+    overflow-y: hidden;
     height: 100vh;
     display: flex;
     flex-direction: row;
@@ -126,8 +130,8 @@ body {
 }
 .overlay > div {
   height: calc(100% - 4px);
-  background-color: rgb(8, 8, 192);
-  opacity: 0.92;
+  background-color: rgb(32, 32, 32);
+  opacity: 0.8;
   border: 2px solid grey;
   border-radius: 1vmin;
 }
@@ -157,7 +161,7 @@ body {
 .settings-tab {
   border: none;
   border-radius: 2vmin;
-  background-color: #eff7fc;
+  background-color: var(--button-color);
 }
 
 .settings-tab.text > .tab-icon::after {
@@ -189,11 +193,11 @@ body {
 }
 
 .tab-label {
-  color: gray;
+  color: var(--disabled-color);
 }
 .settings-tab.selected,
 .settings-tab.selected > .tab-label {
-  color: blue;
+  color: var(--active-color);
   font-weight: bold;
 }
 
@@ -208,13 +212,15 @@ body {
   justify-content: center;
 }
 .settings-content.text button {
-  border: 1px outset grey;
+  border: 1px outset darkgrey;
   border-radius: 2vmin;
-  background-color: #eff7fc;
+  background-color: var(--button-color);
+  color: var(--active-color);
   padding: 1vmin 4vmin;
   font-size: x-large;
 }
 .settings-content.text textarea {
+  outline: none;
   border: none;
   border-radius: 1vmin;
   font-size: x-large;
@@ -224,20 +230,22 @@ body {
   width: 88%;
   min-width: max-content;
 }
+.settings-content.text textarea:focus {
+  outline: 2px outset var(--active-color);
+}
 
 .settings-content {
-  color: white;
   font-size: large;
   font-weight: bold;
 }
 
 .settings-content div.label {
+  color: var(--label-color);
   margin: 0 1vmin 0 4vmin;
   text-align: left;
 }
 
 .settings-content input {
-  color: white;
   background: transparent;
   font-size: large;
 }
@@ -246,7 +254,8 @@ body {
   padding: 1.5vmin 0;
   width: 72%;
 }
-div.color > div.label > input[type="text"] {
+.settings-content div.label > input:disabled {
+  color: var(--hint-color);
   width: 10vmin;
 }
 div.input > span {
@@ -283,8 +292,8 @@ div.input > input.visually-hidden {
 div.label > label[for="bg-image"] {
   border: 1px outset darkgray;
   border-radius: 1vmin;
-  background-color: #eff7fc;
-  color: blue;
+  background-color: var(--button-color);
+  color: var(--active-color);
   margin-left: 1vmin;
   padding: 1vmin 2vmin;
 }

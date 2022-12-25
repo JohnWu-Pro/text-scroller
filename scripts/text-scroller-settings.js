@@ -1,7 +1,9 @@
 'use strict';
 
 class Settings {
-  static DEFAULT = Object.freeze({
+  static #DEFAULT = Object.freeze({
+    version: '0.9',
+
     activeTab: 'text',
 
     text: '',
@@ -9,9 +11,9 @@ class Settings {
                     // 10 == Config.full-screen-scrolling-ms
     foreground: Object.freeze({
       color: Object.freeze({
-        red: 255,   // 0..255
-        green: 192, // 0..255
-        blue: 255   // 0..255
+        red: 240,   // 0..255
+        green: 240, // 0..255
+        blue: 240   // 0..255
       }),
       size: 32,     // [2..4..16] x 4vmin --log()--> [½..1..2]
     }),
@@ -21,19 +23,19 @@ class Settings {
                     // 10 == foreground-font-size
       use: 'customized', // foreground | customized
       color: Object.freeze({
-        red: 128,   // 0..255
+        red: 192,   // 0..255
         green: 255, // 0..255
-        blue: 128   // 0..255
+        blue: 192   // 0..255
       }),
-      interval: 1000,// [0:OFF, 1..10..100] x 100ms --log()--> [-step, 0..1..2]
+      duration: 1000,// [0:OFF, 1..10..100] x 100ms --log()--> [-step, 0..1..2]
     }),
 
     background: Object.freeze({
       use: 'color', // color | image
       color: Object.freeze({
-        red: 64,    // 0..255
-        green: 64,  // 0..255
-        blue: 192   // 0..255
+        red: 16,    // 0..255
+        green: 16,  // 0..255
+        blue: 64    // 0..255
       }),
       url: '',
     })
@@ -41,21 +43,33 @@ class Settings {
   static #RADIUS_RATIOS = [0.04, 0.15, 0.40]
   static #COLOR_RATIOS = [0.1, 0.3, 1.0]
 
-  static #instance = JSON.parse(JSON.stringify(Settings.DEFAULT))
+  static #instance
   static {
     State.load()
-    .then((cache) => Object.assign(Settings.#instance, cache.settings ?? {}))
+    .then((cache) => Settings.#instance = Object.copy(cache.settings?.version === Settings.#DEFAULT.version ? cache.settings : Settings.#DEFAULT))
     // .then(() => console.debug("[DEBUG] Loaded settings: %s", JSON.stringify(Settings.#instance)))
   }
 
-  static get instance() { return Settings.#instance }
+  static get text() { return Settings.#instance.text }
+  static get scrollable() { return Settings.#instance.speed > 0 }
 
-  static save() {
-    return State.set({settings: Settings.#instance})
+  static save() { return State.set({settings: Settings.#instance}) }
+
+  static applyFont(rootStyle) {
+    const settings = Settings.#instance
+    rootStyle.setProperty('--scroller-font-color', Settings.#Color.stringOf(settings.foreground.color))
+    rootStyle.setProperty('--scroller-font-size', settings.foreground.size + 'vmin')
+  }
+
+  static applyScrolling(rootStyle, containerSize, scrollerSize) {
+    const base = Config.fullScreenScrollingMillis * Settings.#DEFAULT.speed / Settings.#instance.speed
+    const duration = Math.round(base * (1 + scrollerSize / containerSize))
+    rootStyle.setProperty('--scrolling-duration', duration + 'ms')
+    rootStyle.setProperty('--scrolling-offset', (-containerSize - scrollerSize) + 'px')
   }
 
   static applyGlowEffect(rootStyle) {
-    const settings = Settings.instance
+    const settings = Settings.#instance
     const content = $E('div.scroller-content')
     content.classList.remove('shadow-animation', 'static-shadow')
     if(settings.glow.radius === 0) {
@@ -69,27 +83,23 @@ class Settings {
     const colors = settings.glow.use === 'foreground'
         ? Array(Settings.#COLOR_RATIOS.length).fill(settings.foreground.color)
         : Settings.#COLOR_RATIOS.map(ratio => Settings.#Color.interpolate(settings.foreground.color, settings.glow.color, ratio))
-    rootStyle.setProperty('--text-shadow', sizes.map((size, index) => `0 0 ${size}vmin ${Settings.rgb(colors[index])}`).join(', '))
-    rootStyle.setProperty('--animation-duration', settings.glow.interval + 'ms')
-    content.classList.add(settings.glow.interval > 0 ? 'shadow-animation' : 'static-shadow')
+    rootStyle.setProperty('--text-shadow', sizes.map((size, index) => `0 0 ${size}vmin ${Settings.#Color.stringOf(colors[index])}`).join(', '))
+    rootStyle.setProperty('--animation-duration', settings.glow.duration + 'ms')
+    content.classList.add(settings.glow.duration > 0 ? 'shadow-animation' : 'static-shadow')
   }
 
   static applyBackground(rootStyle) {
-    const settings = Settings.instance
+    const settings = Settings.#instance
     if(settings.background.use === 'image') {
-      const color = Settings.rgb(Settings.DEFAULT.background.color)
+      const color = Settings.#Color.stringOf(Settings.#DEFAULT.background.color)
       rootStyle.setProperty('--scroller-background-color', color)
       const background = `center / cover no-repeat url("${settings.background.url}")`
       rootStyle.setProperty('--scroller-background', background)
     } else {
-      const color = Settings.rgb(settings.background.color)
+      const color = Settings.#Color.stringOf(settings.background.color)
       rootStyle.setProperty('--scroller-background-color', color)
       rootStyle.setProperty('--scroller-background', color)
     }
-  }
-
-  static rgb(color) {
-    return `rgb(${color.red},${color.green},${color.blue})`
   }
 
   static #Size = {
@@ -113,23 +123,72 @@ class Settings {
         green: inter(from.green, to.green, ratio),
         blue: inter(from.blue, to.blue, ratio)
       }
-    }
+    },
+    stringOf: (color) => `rgb(${color.red},${color.green},${color.blue})`
+  }
+
+  static #Radius = {
+    labelOf: (value) => value===0 ? T('settings.glow.radius.zero') : value,
   }
 
   static View = (() => {
 
     const rootStyle = $E(':root').style
 
+    class ColorPanel {
+      #div
+      #color
+
+      constructor(div, color) {
+        this.#div = div
+        this.#color = color
+      }
+
+      lables() {
+        return `
+          <span>${T('settings.color.red')}</span><input name="red" type="text" disabled size="3" value="${this.#color.red}">
+          <span>${T('settings.color.green')}</span><input name="green" type="text" disabled size="3" value="${this.#color.green}">
+          <span>${T('settings.color.blue')}</span><input name="blue" type="text" disabled size="3" value="${this.#color.blue}">
+        `
+      }
+
+      inputs() {
+        return `
+          <span><span class="red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${this.#color.red}"></span>
+          <span><span class="green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${this.#color.green}"></span>
+          <span><span class="blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${this.#color.blue}"></span>
+        `
+      }
+
+      attach(onChanged) {
+        Array('red', 'green', 'blue').forEach((name) => {
+          const color = {
+            range: $E(`.color input[type="range"].${name}`, this.#div),
+            label: $E(`input[name="${name}"]`, this.#div),
+            value: 0
+          }
+          color.range.addEventListener('input', function() {
+            color.value = Settings.#Color.valueOf(Number.parseInt(this.value))
+            color.label.value = color.value
+          })
+          color.range.addEventListener('change', () => {
+            this.#color[name] = color.value
+            onChanged(this.#color)
+          })
+        })
+      }
+    }
+
     const TABS = {
       text: {
         renderWithin(div) {
-          const settings = Settings.instance
+          const settings = Settings.#instance
           div.innerHTML = `
             <div>
               <textarea rows="5" wrap="soft" placeholder="${T('settings.text.placeholder')}">${settings.text}</textarea>
             </div>
             <div>
-              <button type="button">${T('settings.text.button.label')}</button>
+              <button type="button" value="OK">${T('settings.text.button.ok')}</button>
             </div>
           `
           $E('button', div).addEventListener('click', () => {
@@ -141,11 +200,12 @@ class Settings {
       },
       foreground: {
         renderWithin(div) {
-          const settings = Settings.instance
+          const settings = Settings.#instance
+          const colorPanel = new ColorPanel(div, settings.foreground.color)
           div.innerHTML = `
             <div class="size">
               <div class="label">
-                <span>${T('settings.size.label')}:</span>
+                <span>${T('settings.size')}:</span>
                 <input name="size" type="text" disabled size="3" value="${settings.foreground.size}">
               </div>
               <div class="input">
@@ -154,7 +214,7 @@ class Settings {
             </div>
             <div class="speed">
               <div class="label">
-                <span>${T('settings.speed.label')}:</span>
+                <span>${T('settings.speed')}:</span>
                 <input name="speed" type="text" disabled size="3" value="${Settings.#Speed.labelOf(settings.speed)}">
               </div>
               <div class="input">
@@ -163,51 +223,49 @@ class Settings {
             </div>
             <div class="color">
               <div class="label">
-                <span>${T('settings.color.label')}:</span>
-                <span>${T('settings.color.red')}</span><input name="red" type="text" disabled size="3" value="${settings.foreground.color.red}">
-                <span>${T('settings.color.green')}</span><input name="green" type="text" disabled size="3" value="${settings.foreground.color.green}">
-                <span>${T('settings.color.blue')}</span><input name="blue" type="text" disabled size="3" value="${settings.foreground.color.blue}">
+                <span>${T('settings.color')}:</span>` + colorPanel.lables() + `
               </div>
-              <div class="input">
-                <span><span class="red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${settings.foreground.color.red}"></span>
-                <span><span class="green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${settings.foreground.color.green}"></span>
-                <span><span class="blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${settings.foreground.color.blue}"></span>
+              <div class="input">` + colorPanel.inputs() + `
               </div>
             </div>
           `
-          const $size = $E('input[name="size"]', div)
-          $E('.size input[type="range"]', div).addEventListener('change', function() {
-            const size = Settings.#Size.valueOf(Number.parseFloat(this.value))
-            // console.debug("[DEBUG] onSizeChanged :: range: %s, value: %d", this.value, size)
-            $size.value = size
-            settings.foreground.size = size
-            rootStyle.setProperty('--scroller-font-size', size + 'vmin')
+          const size = {
+            range: $E('.size input[type="range"]', div),
+            label: $E('input[name="size"]', div),
+            value: 0
+          }
+          size.range.addEventListener('input', function() {
+            size.value = Settings.#Size.valueOf(Number.parseFloat(this.value))
+            size.label.value = size.value
+          })
+          size.range.addEventListener('change', function() {
+            settings.foreground.size = size.value
+            rootStyle.setProperty('--scroller-font-size', size.value + 'vmin')
           })
 
-          const $speed = $E('input[name="speed"]', div)
-          $E('.speed input[type="range"]', div).addEventListener('change', function() {
-            const speed = Settings.#Speed.valueOf(Number.parseFloat(this.value))
-            // console.debug("[DEBUG] onSpeedChanged :: range: %s, value: %d", this.value, speed)
-            $speed.value = Settings.#Speed.labelOf(speed)
-            const forceStart = settings.speed === 0 || speed === 0
-            settings.speed = speed
-            if(forceStart) TextScroller.start()
+          const speed = {
+            range: $E('.speed input[type="range"]', div),
+            label: $E('input[name="speed"]', div),
+            value: 0
+          }
+          speed.range.addEventListener('input', function() {
+            speed.value = Settings.#Speed.valueOf(Number.parseFloat(this.value))
+            speed.label.value = Settings.#Speed.labelOf(speed.value)
+          })
+          speed.range.addEventListener('change', function() {
+            const restart = settings.speed === 0 || speed.value === 0
+            settings.speed = speed.value
+            if(restart) TextScroller.start()
           })
 
-          $A('.color input[type="range"]', div).forEach((input) => {
-            input.addEventListener('change', function() {
-              const value = Settings.#Color.valueOf(Number.parseInt(this.value))
-              // console.debug("[DEBUG] onColorChanged(%s) :: range: %s, value: %d", this.className, this.value, value)
-              $E(`input[name="${this.className}"]`, div).value = value
-              settings.foreground.color[this.className] = value
-              rootStyle.setProperty('--scroller-font-color', Settings.rgb(settings.foreground.color))
-            })
+          colorPanel.attach((color) => {
+            rootStyle.setProperty('--scroller-font-color', Settings.#Color.stringOf(color))
           })
         }
       },
       glow: {
         renderWithin(div) {
-          const settings = Settings.instance
+          const settings = Settings.#instance
           div.innerHTML = `
             <div>
             </div>
@@ -218,27 +276,22 @@ class Settings {
       },
       background: {
         renderWithin(div) {
-          const settings = Settings.instance
+          const settings = Settings.#instance
+          const colorPanel = new ColorPanel(div, settings.background.color)
           div.innerHTML = `
             <div class="color">
               <div class="label">
                 <input type="radio" id="use-color" name="use" value="color">
-                <label for="use-color">${T('settings.color.label')}:</label>
-                <span>${T('settings.color.red')}</span><input name="red" type="text" disabled size="3" value="${settings.background.color.red}">
-                <span>${T('settings.color.green')}</span><input name="green" type="text" disabled size="3" value="${settings.background.color.green}">
-                <span>${T('settings.color.blue')}</span><input name="blue" type="text" disabled size="3" value="${settings.background.color.blue}">
+                <label for="use-color">${T('settings.color')}:</label>` + colorPanel.lables() + `
               </div>
-              <div class="input">
-                <span><span class="red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${settings.background.color.red}"></span>
-                <span><span class="green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${settings.background.color.green}"></span>
-                <span><span class="blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${settings.background.color.blue}"></span>
+              <div class="input">` + colorPanel.inputs() + `
               </div>
             </div>
             <div class="image">
               <div class="label">
                 <input type="radio" id="use-image" name="use" value="image">
-                <label for="use-image">${T('settings.image.label')}:</label>
-                <label for="bg-image">${T('settings.image.select.label')}</label>
+                <label for="use-image">${T('settings.image')}:</label>
+                <label for="bg-image">${T('settings.image.select')}</label>
               </div>
               <div class="input">
                 <input type="file" id="bg-image" accept="image/*" class="visually-hidden">
@@ -246,27 +299,24 @@ class Settings {
             </div>
           `
           const radios = $A('.background input[type="radio"]', div)
-          function setRadios() {
+          function updateUseRadios() {
             const value = settings.background.use
             radios.forEach((it) => it.checked = it.value === value)
           }
 
-          setRadios()
-          radios.forEach((input, _, inputs) => {
-            input.addEventListener('change', function() {
+          updateUseRadios()
+          radios.forEach((radio) => {
+            radio.addEventListener('change', function() {
               radios.forEach((it) => { if(it.checked) settings.background.use = it.value })
               Settings.applyBackground(rootStyle)
             })
           })
-          $A('.color input[type="range"]', div).forEach((input) => {
-            input.addEventListener('change', function() {
-              const value = Settings.#Color.valueOf(Number.parseInt(this.value))
-              $E(`input[name="${this.className}"]`, div).value = value
-              settings.background.color[this.className] = value
-              settings.background.use = 'color'; setRadios()
-              Settings.applyBackground(rootStyle)
-            })
+
+          colorPanel.attach(() => {
+            settings.background.use = 'color'; updateUseRadios()
+            Settings.applyBackground(rootStyle)
           })
+
           $E('.image input[type="file"]', div).addEventListener('change', function() {
             const file = this.files[0]
             const reader = new FileReader()
@@ -281,7 +331,7 @@ class Settings {
       },
       more: {
         renderWithin(div) {
-          const settings = Settings.instance
+          const settings = Settings.#instance
           div.innerHTML = `
             <div>
             </div>
@@ -319,7 +369,7 @@ class Settings {
     }
 
     function renderTab(tabDiv) {
-      const settings = Settings.instance
+      const settings = Settings.#instance
       const prevTab = $E('.settings-tab.' + settings.activeTab, $view)
       if(prevTab !== tabDiv) prevTab.classList.remove('selected')
 
@@ -338,7 +388,7 @@ class Settings {
       isVisible = true
 
       // Render active tab
-      renderTab($E('.settings-tab.' + Settings.instance.activeTab, $view))
+      renderTab($E('.settings-tab.' + Settings.#instance.activeTab, $view))
 
       return Promise.resolve()
     }
@@ -349,7 +399,7 @@ class Settings {
       Settings.save()
 
       $content.innerHTML = ''
-      $E('.settings-tab.' + Settings.instance.activeTab, $view).classList.remove('selected')
+      $E('.settings-tab.' + Settings.#instance.activeTab, $view).classList.remove('selected')
 
       isVisible = false
       $hide($overlay)

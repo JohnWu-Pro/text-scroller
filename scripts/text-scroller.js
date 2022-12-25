@@ -12,9 +12,8 @@ window.TextScroller = window.TextScroller ?? (() => {
     `
 
     const rootStyle = $E(':root').style
+    Settings.applyFont(rootStyle)
     Settings.applyBackground(rootStyle)
-    rootStyle.setProperty('--scroller-font-color', Settings.rgb(Settings.instance.foreground.color))
-    rootStyle.setProperty('--scroller-font-size', Settings.instance.foreground.size + 'vmin')
 
     const container = $E('div.scroller-container')
     scrollers.portrait = Scroller.portrait(rootStyle, container)
@@ -68,20 +67,19 @@ window.TextScroller = window.TextScroller ?? (() => {
 
     start() {
       this.#container.innerHTML = `
-        <div class="scroller-content hidden">${Settings.instance.text || T('settings.default.text')}</div>
+        <div class="scroller-content hidden">${Settings.text || T('settings.default.text')}</div>
       `
-
       Settings.applyGlowEffect(this.#rootStyle)
       this.#rolling($E('div.scroller-content', this.#container))
     }
 
     #rolling(div) {
-      return Settings.instance.speed === 0
-        ? Promise.resolve($show(div))
-        : Promise.resolve()
+      return Settings.scrollable
+        ? Promise.resolve()
             .then(() => this.#slide(div))
             .then(() => delay(1))
             .then(() => div.isConnected ? this.#rolling(div) : null)
+        : Promise.resolve($show(div))
     }
 
     #slide(div) {
@@ -95,12 +93,11 @@ window.TextScroller = window.TextScroller ?? (() => {
     }
 
     #onInit(div) {
-      div.style[this.#position] = this.#container['offset'+this.#dimension] + 'px'
+      const containerSize = this.#container['offset'+this.#dimension]
+      const scrollerSize = div['scroll'+this.#dimension]
 
-      const base = Config.fullScreenScrollingMillis * Settings.DEFAULT.speed / Settings.instance.speed
-      const duration = Math.round(base * (1 + div['scroll'+this.#dimension] / this.#container['offset'+this.#dimension]))
-      this.#rootStyle.setProperty('--scrolling-duration', duration + 'ms')
-      this.#rootStyle.setProperty('--scrolling-offset', (-this.#container['offset'+this.#dimension] - div['scroll'+this.#dimension]) + 'px')
+      div.style[this.#position] = containerSize + 'px'
+      Settings.applyScrolling(this.#rootStyle, containerSize, scrollerSize)
     }
   }
 

@@ -26,3 +26,23 @@ function versionOf(script) {
 function resolveNavigatorLocale() {
   return navigator.language.replace(/^([a-z]{2})(?:-[a-z]+)??-([A-Z]{2})$/, '$1-$2')
 }
+
+function isPlainObject(value) {
+  return value?.constructor === Object
+}
+
+/**
+ * Deep copy the source plain object, any non-plain object reference in the object graph will be simply copied.
+ *
+ * @param source the plain object
+ * @returns a new plain object if the source is a plain object; otherwise, the source itself
+ */
+Object.copy = function(source) {
+  if(!isPlainObject(source)) return source
+
+  const result = {}
+  for(const key in source) {
+    result[key] = Object.copy(source[key])
+  }
+  return result
+}
