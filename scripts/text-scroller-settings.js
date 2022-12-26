@@ -55,7 +55,7 @@ class Settings {
 
   static import(settings) { 
     Settings.#instance = Settings.#instance ?? Object.copy(Settings.DEFAULT) 
-    if(settings?.version && settings.version < Settings.DEFAULT.version) {
+    if(settings?.version && settings.version <= Settings.DEFAULT.version) {
       Object.merge(settings, Settings.#instance)
     }
   }
