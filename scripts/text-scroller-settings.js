@@ -239,6 +239,13 @@ class Settings {
           })
         })
       }
+
+      refresh() {
+        Array('red', 'green', 'blue').forEach((name) => {
+          $E(`.color input[type="range"].${name}`, this.#div).value = this.#color[name]
+          $E(`span[name="${name}"]`, this.#div).innerHTML = this.#color[name]
+        })
+      }
     }
 
     function updateRadios(radios, value) {
@@ -293,7 +300,7 @@ class Settings {
             </div>
             <div class="color">
               <div class="label">
-                <span>${T('settings.color')}:</span>
+                <span>${T('settings.tab-label.foreground')}${T('settings.color')}:</span>
                 ${colorPanel.lables()}
               </div>
               <div class="input">
@@ -313,7 +320,16 @@ class Settings {
           const radius = new RangeInput(div, settings.glow, 'radius', Settings.#Radius)
           const duration = new RangeInput(div, settings.glow, 'duration', Settings.#Duration)
 
-          const colorPanel = new ColorPanel(div, settings.glow.color)
+          const delegated = {
+            get red() { return this.delegate().red },
+            set red(value) { this.delegate().red = value },
+            get green() { return this.delegate().green },
+            set green(value) { this.delegate().green = value },
+            get blue() { return this.delegate().blue },
+            set blue(value) { this.delegate().blue = value },
+            delegate() { return settings.glow.use === 'foreground' ? settings.foreground.color : settings.glow.color }
+          }
+          const colorPanel = new ColorPanel(div, delegated)
 
           div.innerHTML = `
             <div class="radius">
@@ -327,26 +343,16 @@ class Settings {
             </div>
             <div class="color">
               <div class="label">
-                <span>${T('settings.color')}:</span>
-                <br/>
+                <span>${T('settings.tab-label.glow')}${T('settings.color')}:</span>
                 <input type="radio" id="use-foreground" name="use" value="foreground">
                 <label for="use-foreground">${T('settings.glow.use.foreground')}</label>
-                <span class="use-foreground disabled">
-                  <span>${T('settings.color.red')}</span><span class="hint">${settings.foreground.color.red}</span>
-                  <span>${T('settings.color.green')}</span><span class="hint">${settings.foreground.color.green}</span>
-                  <span>${T('settings.color.blue')}</span><span class="hint">${settings.foreground.color.blue}</span>
-                </span>
-                <br/>
                 <input type="radio" id="use-customized" name="use" value="customized">
                 <label for="use-customized">${T('settings.glow.use.customized')}</label>
-                <span class="use-customized disabled">
-                  ${colorPanel.lables()}
-                </span>
+                <br/>
+                <span>&nbsp;&nbsp;&nbsp;</span>${colorPanel.lables()}
               </div>
               <div class="input">
-                <span class="use-customized disabled">
-                  ${colorPanel.inputs()}
-                </span>
+                ${colorPanel.inputs()}
               </div>
             </div>
             <div class="duration">
@@ -367,22 +373,21 @@ class Settings {
           })
           duration.onChanged(() => Settings.applyGlowEffect(rootStyle))
 
-          function enable(elements, on = true) {
-            elements.forEach((it) => {
-              it.classList.toggle('disabled', !on)
-              $A('input', it).forEach((input) => input.disabled = !on)
-            })
+          function updateColorRanges() {
+            const $div = $E('.color > div.input', div)
+            const disabled = settings.glow.use !== 'customized'
+            $div.classList.toggle('disabled', disabled)
+            $A('input', $div).forEach((input) => input.disabled = disabled)
           }
-          enable($A('span.use-' + settings.glow.use, div))
-          enable($A('span.use-' + (settings.glow.use === 'foreground' ? 'customized' : 'foreground'), div), false)
+          updateColorRanges()
 
           const radios = $A('.color input[type="radio"]', div)
           updateRadios(radios, settings.glow.use)
           radios.forEach((radio) => {
             radio.addEventListener('change', function(event) {
-              enable($A('span.use-' + settings.glow.use, div), false)
-              enable($A('span.' + event.target.id, div))
               radios.forEach((it) => { if(it.checked) settings.glow.use = it.value })
+              colorPanel.refresh()
+              updateColorRanges()
               Settings.applyGlowEffect(rootStyle)
             })
           })
@@ -398,7 +403,7 @@ class Settings {
             <div class="color">
               <div class="label">
                 <input type="radio" id="use-color" name="use" value="color">
-                <label for="use-color">${T('settings.color')}:</label>` + colorPanel.lables() + `
+                <label for="use-color">${T('settings.tab-label.background')}${T('settings.color')}:</label>` + colorPanel.lables() + `
               </div>
               <div class="input">` + colorPanel.inputs() + `
               </div>

@@ -10,7 +10,7 @@ v Foreground
    v Color
    v Scrolling Speed
    v Size
-   + Glow Effect, Frequency
+   v Glow Effect, Frequency
 v Background
    v Color
    v Image
@@ -28,6 +28,7 @@ v Configuration panel dock to bottom (portrait) or right (landscape)
    + Sliding in configuration panel
 v Auto hide configuration panel
 v Save settings
++ Beautify switch control
 
 # Project Development
 
