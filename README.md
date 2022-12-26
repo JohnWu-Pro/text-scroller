@@ -18,16 +18,16 @@ v Background
    v Color
    v Image
 v What if the site is not responding
-+ Refine icons and favicon
-+ README per language
+v Refine icons and favicon
 + Render README.md & LICENSE.md, via More, in new page
    + Markdown rendering
    + Replace openDoc
++ README per language
 + English version
 v More
    v Share via qrcode
    v QRCode background opaque
-   + Honor shared settings
+   v Honor shared settings
    v Copyright and license
 v Refine Add to Home Screen (less aggressive)
 
