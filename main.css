@@ -239,6 +239,10 @@ body {
   font-weight: bold;
 }
 
+.settings-content .disabled span {
+  color: var(--disabled-color) !important;
+}
+
 .settings-content div.label {
   color: var(--label-color);
   margin: 0 1vmin 0 4vmin;
@@ -254,14 +258,13 @@ body {
   padding: 1.5vmin 0;
   width: 72%;
 }
-.settings-content div.label > input:disabled {
+.settings-content div.label span.hint {
   color: var(--hint-color);
-  width: 10vmin;
 }
-div.input > span {
+div.input span.color-line {
   white-space: nowrap;
 }
-div.input > span > span {
+div.input span.color-name {
   background-color: white;
   border: none;
   border-radius: 1vmin;
@@ -269,16 +272,16 @@ div.input > span > span {
   margin-right: 0.75vmin;
   vertical-align: super;
 }
-div.input > span > span.red {
+div.input span.color-name.red {
   color: red;
 }
-div.input > span > span.green {
+div.input span.color-name.green {
   color: green;
 }
-div.input > span > span.blue {
+div.input span.color-name.blue {
   color: blue;
 }
-div.input > span > input {
+div.input span input {
   vertical-align: bottom;
 }
 

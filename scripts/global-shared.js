@@ -46,3 +46,10 @@ Object.copy = function(source) {
   }
   return result
 }
+
+function propertyOf(object, key) {
+  return {
+    get: () => object[key],
+    set: (value) => object[key] = value
+  }
+}

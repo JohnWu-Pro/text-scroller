@@ -102,20 +102,25 @@ class Settings {
     }
   }
 
+  // [2..4..16] x 4vmin --log()--> [½..1..2]
   static #Size = {
+    labelOf: (value) => value,
     rangeOf: (value) => Math.log2(value/4)/2,
     valueOf: (range) => Math.round(Math.pow(4, range)*4),
   }
 
+  // [0:OFF, 1..10..100] --log()--> [-step, 0..1..2]
   static #SPEED_STEP = 0.1
   static #Speed = {
-    rangeOf: (value) => value===0 ? -Settings.#SPEED_STEP : Math.log10(value),
     labelOf: (value) => value===0 ? T('settings.speed.zero') : value,
+    rangeOf: (value) => value===0 ? -Settings.#SPEED_STEP : Math.log10(value),
     valueOf: (range) => range < 0 ? 0 : Math.round(Math.pow(10, range)),
   }
 
   static #Color = {
-    valueOf: (range) => range > 255 ? 255 : range,
+    labelOf: (value) => value,
+    rangeOf: (value) => value,
+    valueOf: (range) => Math.min(range, 255),
     interpolate: (from, to, ratio) => {
       const inter = (from, to, ratio) => from + Math.round((to - from) * ratio)
       return {
@@ -127,13 +132,72 @@ class Settings {
     stringOf: (color) => `rgb(${color.red},${color.green},${color.blue})`
   }
 
+  // [0:OFF, 1..5..10]
   static #Radius = {
     labelOf: (value) => value===0 ? T('settings.glow.radius.zero') : value,
+    rangeOf: (value) => value,
+    valueOf: Number.parseInt,
+  }
+
+  // [0:OFF, 1..10..100] x 100ms --log()--> [-step, 0..1..2]
+  static #DURATION_STEP = 0.1
+  static #Duration = {
+    labelOf: (value) => {
+      if(value===0) return T('settings.glow.duration.zero')
+      if(value < 1000) return value + 'ms'
+      if(value < 10000) return (value / 1000).toFixed(1) + 's'
+      return (value / 1000).toFixed(0) + 's'
+    },
+    rangeOf: (value) => value===0 ? -Settings.#DURATION_STEP : Math.log10(value/100),
+    valueOf: (range) => range < 0 ? 0 : Math.round(Math.pow(10, range)) * 100,
   }
 
   static View = (() => {
 
     const rootStyle = $E(':root').style
+
+    class RangeInput {
+      #div
+      #object
+      #property
+      #labelOf
+      #rangeOf
+      #valueOf
+
+      constructor(div, object, property, converter = {}) {
+        this.#div = div
+        this.#object = object
+        this.#property = property
+        this.#labelOf = converter.labelOf ?? (o=>o)
+        this.#rangeOf = converter.rangeOf ?? (o=>o)
+        this.#valueOf = converter.valueOf ?? (o=>o)
+      }
+
+      label() {
+        return `<span name="${this.#property}" class="hint">${this.#labelOf(this.#object[this.#property])}</span>`
+      }
+
+      input(min, step, max) {
+        return `<input type="range" min="${min}" step="${step}" max="${max}" value="${this.#rangeOf(this.#object[this.#property])}">`
+      }
+
+      onChanged(handler) {
+        const range = {
+          input: $E(`.${this.#property} input[type="range"]`, this.#div),
+          label: $E(`span[name="${this.#property}"]`, this.#div),
+          value: 0
+        }
+        range.input.addEventListener('input', (event) => {
+          range.value = this.#valueOf(event.target.value)
+          range.label.innerHTML = this.#labelOf(range.value)
+        })
+        range.input.addEventListener('change', () => {
+          const oldValue = this.#object[this.#property]
+          this.#object[this.#property] = range.value
+          if(handler) handler(range.value, oldValue)
+        })
+      }
+    }
 
     class ColorPanel {
       #div
@@ -146,37 +210,39 @@ class Settings {
 
       lables() {
         return `
-          <span>${T('settings.color.red')}</span><input name="red" type="text" disabled size="3" value="${this.#color.red}">
-          <span>${T('settings.color.green')}</span><input name="green" type="text" disabled size="3" value="${this.#color.green}">
-          <span>${T('settings.color.blue')}</span><input name="blue" type="text" disabled size="3" value="${this.#color.blue}">
-        `
+          <span>${T('settings.color.red')}</span><span name="red" class="hint">${this.#color.red}</span>
+          <span>${T('settings.color.green')}</span><span name="green" class="hint">${this.#color.green}</span>
+          <span>${T('settings.color.blue')}</span><span name="blue" class="hint">${this.#color.blue}</span>`
       }
 
       inputs() {
         return `
-          <span><span class="red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${this.#color.red}"></span>
-          <span><span class="green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${this.#color.green}"></span>
-          <span><span class="blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${this.#color.blue}"></span>
-        `
+          <span class="color-line"><span class="color-name red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${this.#color.red}"></span>
+          <span class="color-line"><span class="color-name green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${this.#color.green}"></span>
+          <span class="color-line"><span class="color-name blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${this.#color.blue}"></span>`
       }
 
-      attach(onChanged) {
+      onChanged(handler) {
         Array('red', 'green', 'blue').forEach((name) => {
           const color = {
             range: $E(`.color input[type="range"].${name}`, this.#div),
-            label: $E(`input[name="${name}"]`, this.#div),
+            label: $E(`span[name="${name}"]`, this.#div),
             value: 0
           }
           color.range.addEventListener('input', function() {
             color.value = Settings.#Color.valueOf(Number.parseInt(this.value))
-            color.label.value = color.value
+            color.label.innerHTML = color.value
           })
           color.range.addEventListener('change', () => {
             this.#color[name] = color.value
-            onChanged(this.#color)
+            if(handler) handler(this.#color)
           })
         })
       }
+    }
+
+    function updateRadios(radios, value) {
+      radios.forEach((it) => it.checked = it.value === value)
     }
 
     const TABS = {
@@ -201,77 +267,127 @@ class Settings {
       foreground: {
         renderWithin(div) {
           const settings = Settings.#instance
+
+          const size = new RangeInput(div, settings.foreground, 'size', Settings.#Size)
+          const speed = new RangeInput(div, settings, 'speed', Settings.#Speed)
+
           const colorPanel = new ColorPanel(div, settings.foreground.color)
           div.innerHTML = `
             <div class="size">
               <div class="label">
                 <span>${T('settings.size')}:</span>
-                <input name="size" type="text" disabled size="3" value="${settings.foreground.size}">
+                ${size.label()}
               </div>
               <div class="input">
-                <input type="range" min="0.5" step="0.125" max="2" value="${Settings.#Size.rangeOf(settings.foreground.size)}">
+                ${size.input(0.5, 0.125, 2)}
               </div>
             </div>
             <div class="speed">
               <div class="label">
                 <span>${T('settings.speed')}:</span>
-                <input name="speed" type="text" disabled size="3" value="${Settings.#Speed.labelOf(settings.speed)}">
+                ${speed.label()}
               </div>
               <div class="input">
-                <input type="range" min="-${Settings.#SPEED_STEP}" step="${Settings.#SPEED_STEP}" max="2" value="${Settings.#Speed.rangeOf(settings.speed)}">
+                ${speed.input(-Settings.#SPEED_STEP, Settings.#SPEED_STEP, 2)}
               </div>
             </div>
             <div class="color">
               <div class="label">
-                <span>${T('settings.color')}:</span>` + colorPanel.lables() + `
+                <span>${T('settings.color')}:</span>
+                ${colorPanel.lables()}
               </div>
-              <div class="input">` + colorPanel.inputs() + `
+              <div class="input">
+                ${colorPanel.inputs()}
               </div>
             </div>
           `
-          const size = {
-            range: $E('.size input[type="range"]', div),
-            label: $E('input[name="size"]', div),
-            value: 0
-          }
-          size.range.addEventListener('input', function() {
-            size.value = Settings.#Size.valueOf(Number.parseFloat(this.value))
-            size.label.value = size.value
-          })
-          size.range.addEventListener('change', function() {
-            settings.foreground.size = size.value
-            rootStyle.setProperty('--scroller-font-size', size.value + 'vmin')
-          })
-
-          const speed = {
-            range: $E('.speed input[type="range"]', div),
-            label: $E('input[name="speed"]', div),
-            value: 0
-          }
-          speed.range.addEventListener('input', function() {
-            speed.value = Settings.#Speed.valueOf(Number.parseFloat(this.value))
-            speed.label.value = Settings.#Speed.labelOf(speed.value)
-          })
-          speed.range.addEventListener('change', function() {
-            const restart = settings.speed === 0 || speed.value === 0
-            settings.speed = speed.value
-            if(restart) TextScroller.start()
-          })
-
-          colorPanel.attach((color) => {
-            rootStyle.setProperty('--scroller-font-color', Settings.#Color.stringOf(color))
-          })
+          size.onChanged((newValue) => rootStyle.setProperty('--scroller-font-size', newValue + 'vmin'))
+          speed.onChanged((newValue, oldValue) => { if(oldValue === 0 || newValue === 0) TextScroller.start() })
+          colorPanel.onChanged((color) => rootStyle.setProperty('--scroller-font-color', Settings.#Color.stringOf(color)))
         }
       },
       glow: {
         renderWithin(div) {
           const settings = Settings.#instance
+
+          const radius = new RangeInput(div, settings.glow, 'radius', Settings.#Radius)
+          const duration = new RangeInput(div, settings.glow, 'duration', Settings.#Duration)
+
+          const colorPanel = new ColorPanel(div, settings.glow.color)
+
           div.innerHTML = `
-            <div>
+            <div class="radius">
+              <div class="label">
+                <span>${T('settings.glow.radius')}:</span>
+                ${radius.label()}
+              </div>
+              <div class="input">
+                ${radius.input(0, 1, 10)}
+              </div>
             </div>
-            <div>
+            <div class="color">
+              <div class="label">
+                <span>${T('settings.color')}:</span>
+                <br/>
+                <input type="radio" id="use-foreground" name="use" value="foreground">
+                <label for="use-foreground">${T('settings.glow.use.foreground')}</label>
+                <span class="use-foreground disabled">
+                  <span>${T('settings.color.red')}</span><span class="hint">${settings.foreground.color.red}</span>
+                  <span>${T('settings.color.green')}</span><span class="hint">${settings.foreground.color.green}</span>
+                  <span>${T('settings.color.blue')}</span><span class="hint">${settings.foreground.color.blue}</span>
+                </span>
+                <br/>
+                <input type="radio" id="use-customized" name="use" value="customized">
+                <label for="use-customized">${T('settings.glow.use.customized')}</label>
+                <span class="use-customized disabled">
+                  ${colorPanel.lables()}
+                </span>
+              </div>
+              <div class="input">
+                <span class="use-customized disabled">
+                  ${colorPanel.inputs()}
+                </span>
+              </div>
+            </div>
+            <div class="duration">
+              <div class="label">
+                <span>${T('settings.glow.duration')}:</span>
+                ${duration.label()}
+              </div>
+              <div class="input">
+                ${duration.input(-Settings.#DURATION_STEP, Settings.#DURATION_STEP, 2)}
+              </div>
             </div>
           `
+          $A('div.color, div.duration', div).forEach((div) => $toggle(div, settings.glow.radius===0))
+
+          radius.onChanged(() => {
+            $A('div.color, div.duration', div).forEach((div) => $toggle(div, settings.glow.radius===0))
+            Settings.applyGlowEffect(rootStyle)
+          })
+          duration.onChanged(() => Settings.applyGlowEffect(rootStyle))
+
+          function enable(elements, on = true) {
+            elements.forEach((it) => {
+              it.classList.toggle('disabled', !on)
+              $A('input', it).forEach((input) => input.disabled = !on)
+            })
+          }
+          enable($A('span.use-' + settings.glow.use, div))
+          enable($A('span.use-' + (settings.glow.use === 'foreground' ? 'customized' : 'foreground'), div), false)
+
+          const radios = $A('.color input[type="radio"]', div)
+          updateRadios(radios, settings.glow.use)
+          radios.forEach((radio) => {
+            radio.addEventListener('change', function(event) {
+              enable($A('span.use-' + settings.glow.use, div), false)
+              enable($A('span.' + event.target.id, div))
+              radios.forEach((it) => { if(it.checked) settings.glow.use = it.value })
+              Settings.applyGlowEffect(rootStyle)
+            })
+          })
+
+          colorPanel.onChanged(() => Settings.applyGlowEffect(rootStyle))
         }
       },
       background: {
@@ -299,12 +415,7 @@ class Settings {
             </div>
           `
           const radios = $A('.background input[type="radio"]', div)
-          function updateUseRadios() {
-            const value = settings.background.use
-            radios.forEach((it) => it.checked = it.value === value)
-          }
-
-          updateUseRadios()
+          updateRadios(radios, settings.background.use)
           radios.forEach((radio) => {
             radio.addEventListener('change', function() {
               radios.forEach((it) => { if(it.checked) settings.background.use = it.value })
@@ -312,8 +423,9 @@ class Settings {
             })
           })
 
-          colorPanel.attach(() => {
-            settings.background.use = 'color'; updateUseRadios()
+          colorPanel.onChanged(() => {
+            settings.background.use = 'color'
+            updateRadios(radios, settings.background.use)
             Settings.applyBackground(rootStyle)
           })
 
@@ -322,7 +434,8 @@ class Settings {
             const reader = new FileReader()
             reader.onload = (event) => {
               settings.background.url = event.target.result
-              settings.background.use = 'image'; setRadios()
+              settings.background.use = 'image'
+              updateRadios(radios, settings.background.use)
               Settings.applyBackground(rootStyle)
             }
             reader.readAsDataURL(file)
