@@ -1,7 +1,7 @@
 'use strict';
 
 class Settings {
-  static #DEFAULT = Object.freeze({
+  static DEFAULT = Object.freeze({
     version: '0.9',
 
     activeTab: 'text',
@@ -41,17 +41,24 @@ class Settings {
     })
   })
   static #RADIUS_RATIOS = [0.04, 0.15, 0.40]
-  static #COLOR_RATIOS = [0.1, 0.3, 1.0]
+  static #COLOR_RATIOS = [0.2, 0.7, 1.0]
 
-  static #instance
+  static #instance = undefined
   static {
     State.load()
-    .then((cache) => Settings.#instance = Object.copy(cache.settings?.version === Settings.#DEFAULT.version ? cache.settings : Settings.#DEFAULT))
+    .then((cache) => Settings.import(cache.settings))
     // .then(() => console.debug("[DEBUG] Loaded settings: %s", JSON.stringify(Settings.#instance)))
   }
 
   static get text() { return Settings.#instance.text }
   static get scrollable() { return Settings.#instance.speed > 0 }
+
+  static import(settings) { 
+    Settings.#instance = Settings.#instance ?? Object.copy(Settings.DEFAULT) 
+    if(settings?.version && settings.version < Settings.DEFAULT.version) {
+      Object.merge(settings, Settings.#instance)
+    }
+  }
 
   static save() { return State.set({settings: Settings.#instance}) }
 
@@ -62,7 +69,7 @@ class Settings {
   }
 
   static applyScrolling(rootStyle, containerSize, scrollerSize) {
-    const base = Config.fullScreenScrollingMillis * Settings.#DEFAULT.speed / Settings.#instance.speed
+    const base = Config.fullScreenScrollingMillis * Settings.DEFAULT.speed / Settings.#instance.speed
     const duration = Math.round(base * (1 + scrollerSize / containerSize))
     rootStyle.setProperty('--scrolling-duration', duration + 'ms')
     rootStyle.setProperty('--scrolling-offset', (-containerSize - scrollerSize) + 'px')
@@ -91,7 +98,7 @@ class Settings {
   static applyBackground(rootStyle) {
     const settings = Settings.#instance
     if(settings.background.use === 'image') {
-      const color = Settings.#Color.stringOf(Settings.#DEFAULT.background.color)
+      const color = Settings.#Color.stringOf(Settings.DEFAULT.background.color)
       rootStyle.setProperty('--scroller-background-color', color)
       const background = `center / cover no-repeat url("${settings.background.url}")`
       rootStyle.setProperty('--scroller-background', background)
@@ -449,13 +456,52 @@ class Settings {
       },
       more: {
         renderWithin(div) {
-          const settings = Settings.#instance
           div.innerHTML = `
-            <div>
+            <div class="share">
+              <div class="label">
+                <span>${T('settings.share')}:</span>
+                <input type="checkbox" checked id="with-settings" name="with-settings"><label for="with-settings">${T('settings.share.with-settings')}</label>
+              </div>
+              <div class="input">
+                <div class="qrcode"></div>
+              </div>
             </div>
-            <div>
+            <div class="copyright">
+              <span>${T('footer.readme')}</span>.
+              <span style="white-space: nowrap;">
+                <a href="javascript:openDoc('LICENSE.txt', 'License')" title="License">${T('footer.copyright')}&copy; 2022</a>
+                <a href="mailto: johnwu.pro@gmail.com" target="_blank">${T('footer.owner')}</a>,
+                ${T('footer.licensed-under')}<a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
+              </span>
             </div>
           `
+          const withSettings = $E('.share input[type="checkbox"]', div)
+          const container = $E('div.qrcode', div)
+          function renderQrcode() {
+            let url = location.origin + location.pathname + location.search
+            if(withSettings.checked) {
+              const settings = Object.copy(Settings.#instance)
+              settings.background.url = ''
+              url += (location.search ? '&' : '?') + 'settings=' + Base64.UrlSafe.encodeFromString(JSON.stringify(settings))
+            }
+            url += location.hash
+
+            container.innerHTML = ''
+            new QRCode(container, {
+              text: url,
+              width: 224,
+              height: 224,
+              quietZone: 8,
+              quietZoneColor: '#ffcccc',
+              logo: HREF_BASE + '/images/icon-64x64.png',
+              logoWidth: 64,
+              logoHeight: 64,
+              logoBackgroundTransparent: true,
+            })
+          }
+          renderQrcode()
+
+          withSettings.addEventListener('change', renderQrcode)
         }
       },
     }

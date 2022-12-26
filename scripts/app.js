@@ -23,7 +23,7 @@ window.App = window.App ?? (() => {
     window.addEventListener("scroller-touched", () => window.dispatchEvent(new CustomEvent('close-settings')))
     window.addEventListener("settings-closed", () => window.dispatchEvent(new CustomEvent('show-menu')))
 
-    return State.load()
+    return loadSettings()
         .then(() => TextScroller.init())
         .then(() => TextScroller.start())
         .then(() => Menu.init())
@@ -37,6 +37,19 @@ window.App = window.App ?? (() => {
 
   function onDeactivate() {
     window.dispatchEvent(new CustomEvent('close-settings'))
+  }
+
+  function loadSettings() {
+    const param = new URLSearchParams(location.search).get('settings')
+    if(param) {
+      return Promise.resolve()
+          .then(() => JSON.parse(Base64.UrlSafe.decodeToString(param)))
+          .then((settings) => Settings.import(settings))
+          .catch(error => console.error("[ERROR] Error occurred while trying to resolve and/or import settings: %o", error))
+          .then(State.load)
+    } else {
+      return State.load()
+    }
   }
 
   //

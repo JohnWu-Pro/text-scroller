@@ -127,11 +127,12 @@ body {
 
 .overlay {
   z-index: 10; position: absolute;
+
+  --overlay-background: rgb(32, 32, 32);
+  --overlay-opacity: 0.8;
 }
 .overlay > div {
   height: calc(100% - 4px);
-  background-color: rgb(32, 32, 32);
-  opacity: 0.8;
   border: 2px solid grey;
   border-radius: 1vmin;
 }
@@ -148,6 +149,8 @@ body {
 .settings-tabs {
   display: flex;
   justify-content: space-evenly;
+  background-color: var(--overlay-background);
+  opacity: var(--overlay-opacity);
 }
 
 .settings-view > :first-child,
@@ -202,28 +205,39 @@ body {
 }
 
 .settings-content {
-  font-size: large;
+  font-size: medium;
   font-weight: bold;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  background-color: var(--overlay-background);
+  opacity: var(--overlay-opacity);
 }
 .settings-content.foreground > div:first-child,
 .settings-content.glow > div:first-child,
-.settings-content.background > div:first-child {
-  margin: 3vmin 2vmin 1vmin 2vmin;
+.settings-content.background > div:first-child,
+.settings-content.more > div:first-child {
+  margin: 2vmin 2vmin 1vmin 2vmin;
 }
-.settings-content.foreground > div:not(:first-child),
-.settings-content.glow > div:not(:first-child),
-.settings-content.background > div:not(:first-child) {
+.settings-content.foreground > div:not(:first-child):not(:last-child),
+.settings-content.glow > div:not(:first-child):not(:last-child),
+.settings-content.background > div:not(:first-child):not(:last-child),
+.settings-content.more > div:not(:first-child):not(:last-child) {
   margin: 0 2vmin;
   border-top: 1px solid var(--disabled-color);
   padding: 1vmin 0;
 }
-.settings-content.background > div:not(:first-child) {
+.settings-content.background > div {
   padding: 3vmin 0;
 }
+.settings-content.foreground > div:last-child,
+.settings-content.glow > div:last-child,
+.settings-content.background > div:last-child,
+.settings-content.more > div:last-child {
+  margin: 1vmin 2vmin 2vmin 2vmin;
+}
+
 .settings-content.text {
   justify-content: center;
 }
@@ -307,9 +321,30 @@ div.label > label[for="bg-image"] {
   padding: 1vmin 2vmin;
 }
 
+.settings-content.more {
+  opacity: 1;
+}
+.settings-content.more .share div.input {
+  height: 248px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+div.copyright,
+div.copyright a {
+  text-align: center;
+  font: 3vmin var(--main-font-family);
+  color: #d0d0d0;
+}
+
+a, a:hover, a:visited {
+  text-decoration: underline dotted;
+}
+
 @media (orientation: landscape) {
   .overlay {
-    left: calc(100vw - 100vmin); top: 0;
+    left: calc(100dvw - 100vmin); top: 0;
     width: 100vmin; height: 100vmin;
   }
 
@@ -332,8 +367,8 @@ div.label > label[for="bg-image"] {
 }
 @media (orientation: portrait) {
   .overlay {
-    left: 0; top: calc(100dvh - 80vmin);
-    width: 100vmin; height: 80vmin;
+    left: 0; top: calc(100dvh - 96vmin);
+    width: 100vmin; height: 96vmin;
   }
 
   .settings-view {

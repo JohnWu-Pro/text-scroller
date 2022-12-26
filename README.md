@@ -2,6 +2,9 @@
 
 https://play.google.com/store/apps/details?id=com.ttnnapps.LedTextDisplay&hl=en_CA&gl=US&pli=1
 
+https://www.jqueryscript.net/blog/best-custom-qr-code-generator.html
+https://github.com/ushelp/EasyQRCodeJS
+
 # TODOs
 v Text
    v Tweak icon
@@ -16,10 +19,16 @@ v Background
    v Image
 v What if the site is not responding
 + Refine icons and favicon
++ README per language
++ Render README.md & LICENSE.md, via More, in new page
+   + Markdown rendering
+   + Replace openDoc
 + English version
-+ More
-   + Share via barcode
-   + Copyright and license
+v More
+   v Share via qrcode
+   v QRCode background opaque
+   + Honor shared settings
+   v Copyright and license
 v Refine Add to Home Screen (less aggressive)
 
 v Full screen

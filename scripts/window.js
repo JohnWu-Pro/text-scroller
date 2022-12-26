@@ -99,3 +99,22 @@ function appendElement(tag, attributes, container) {
 function createElement(tag, attributes) {
   return Object.assign(document.createElement(tag), attributes)
 }
+
+function openDoc(url, name) {
+  const height = screen.height/2
+  const width = screen.width/2
+  const top = height/2
+  const left = width/2
+  const features = `
+    resizable=yes
+    ,menubar=no
+    ,toolbar=no
+    ,scrollbars=yes
+    ,status=no
+    ,top=${top},screenY=${top}
+    ,left=${left},screenX=${left}
+    ,height=${height}
+    ,width=${width}
+  `
+  window.open(url, name, features);
+}

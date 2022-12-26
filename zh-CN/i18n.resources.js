@@ -31,8 +31,16 @@ values: {
   "settings.glow.duration": "闪烁间隔(不闪 或 100ms到10s)",
   "settings.glow.duration.zero": "不闪",
 
+  "settings.share": "分享",
+  "settings.share.with-settings": "包含我的设置",
+
   "install.add-to-home-screen": "安装到桌面",
   "install.demo.acknowledge": "已了解!",
+
+  "footer.copyright": "版权所有",
+  "footer.owner": "吴菊华",
+  "footer.licensed-under": "适用版权许可",
+  "footer.readme": "自述文件",
 }
 
 }) })(i18n)

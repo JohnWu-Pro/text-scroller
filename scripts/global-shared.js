@@ -32,19 +32,30 @@ function isPlainObject(value) {
 }
 
 /**
- * Deep copy the source plain object, any non-plain object reference in the object graph will be simply copied.
+ * Deep copy the source plain object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied.
  *
- * @param source the plain object
+ * @param source the source object
  * @returns a new plain object if the source is a plain object; otherwise, the source itself
  */
 Object.copy = function(source) {
+  return Object.merge(source)
+}
+
+/**
+ * Deep merge the source plain object to the target object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied to the target.
+ *
+ * @param source the source object
+ * @param target the target object
+ * @returns the source object itself if it's a non-plain object; 
+ *          otherwise, the target object with its properties graph/hierarchy being overriden from the source object's properties graph/hierarchy.
+ */
+Object.merge = function(source, target = {}) {
   if(!isPlainObject(source)) return source
 
-  const result = {}
   for(const key in source) {
-    result[key] = Object.copy(source[key])
+    target[key] = Object.merge(source[key], target[key])
   }
-  return result
+  return target
 }
 
 function propertyOf(object, key) {
