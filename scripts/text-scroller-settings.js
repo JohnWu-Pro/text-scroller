@@ -492,7 +492,7 @@ class Settings {
               width: 224,
               height: 224,
               quietZone: 8,
-              quietZoneColor: '#ffcccc',
+              quietZoneColor: '#40C040',
               logo: HREF_BASE + '/images/icon-64x64.png',
               logoWidth: 64,
               logoHeight: 64,

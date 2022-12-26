@@ -27,7 +27,7 @@ values: {
   "settings.glow.radius": "半径(无光晕 或 1到10)",
   "settings.glow.radius.zero": "无光晕",
   "settings.glow.use.customized": "定制",
-  "settings.glow.use.foreground": "前景",
+  "settings.glow.use.foreground": "采用前景颜色",
   "settings.glow.duration": "闪烁间隔(不闪 或 100ms到10s)",
   "settings.glow.duration.zero": "不闪",
 

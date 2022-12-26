@@ -228,14 +228,15 @@ body {
   border-top: 1px solid var(--disabled-color);
   padding: 1vmin 0;
 }
-.settings-content.background > div {
-  padding: 3vmin 0;
-}
 .settings-content.foreground > div:last-child,
 .settings-content.glow > div:last-child,
-.settings-content.background > div:last-child,
-.settings-content.more > div:last-child {
+.settings-content.background > div:last-child {
   margin: 1vmin 2vmin 2vmin 2vmin;
+  border-top: 1px solid var(--disabled-color);
+  padding: 1vmin 0;
+}
+.settings-content.background > div {
+  padding: 3vmin 0 !important;
 }
 
 .settings-content.text {
