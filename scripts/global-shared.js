@@ -8,17 +8,11 @@ const HREF_BASE = hrefBase(location)
 const CONTEXT_PATH = contextPath(location)
 
 const {APP_BASE, LOCALE} = ((base) => {
-  let LOCALE = resolveNavigatorLocale()
-
-  if(base.endsWith('/' + LOCALE)) {
-    return {APP_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
-  } else if(LOCALE.length > 2) {
-    LOCALE = LOCALE.substring(0, 2)
-    if(base.endsWith('/' + LOCALE)) {
-      return {APP_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
-    }
+  const LOCALE = Config.supportedLocales.find((locale) => base.endsWith('/' + locale)) ?? ''
+  return {
+    APP_BASE: LOCALE ? base.substring(0, base.length - (LOCALE.length+1)) : base,
+    LOCALE
   }
-  return {APP_BASE: base, LOCALE: ''}
 })(HREF_BASE)
 
 function delay(millis, value) {
