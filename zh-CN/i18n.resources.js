@@ -32,7 +32,7 @@ values: {
   "settings.glow.duration.zero": "不闪",
 
   "settings.share": "分享",
-  "settings.share.with-settings": "包含我的设置",
+  "settings.share.with-settings": "包含我的设定",
 
   "install.add-to-home-screen": "添加到桌面",
   "install.demo.acknowledge": "已了解!",

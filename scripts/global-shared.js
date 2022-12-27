@@ -7,18 +7,18 @@
 const HREF_BASE = hrefBase(location)
 const CONTEXT_PATH = contextPath(location)
 
-const {SITE_BASE, LOCALE} = ((base) => {
+const {APP_BASE, LOCALE} = ((base) => {
   let LOCALE = resolveNavigatorLocale()
 
   if(base.endsWith('/' + LOCALE)) {
-    return {SITE_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
+    return {APP_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
   } else if(LOCALE.length > 2) {
     LOCALE = LOCALE.substring(0, 2)
     if(base.endsWith('/' + LOCALE)) {
-      return {SITE_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
+      return {APP_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
     }
   }
-  return {SITE_BASE: base, LOCALE: ''}
+  return {APP_BASE: base, LOCALE: ''}
 })(HREF_BASE)
 
 function delay(millis, value) {
@@ -41,40 +41,37 @@ function resolveNavigatorLocale() {
   return navigator.language.replace(/^([a-z]{2})(?:-[a-z]+)??-([A-Z]{2})$/, '$1-$2')
 }
 
-function isPlainObject(value) {
-  return value?.constructor === Object
-}
+const PlainObject = {
+  /**
+  * Check if the value is a plain object
+  *
+  * @param value the value to be checked
+  * @returns true if the value is a plain object, false otherwise
+  */
+  is(value) { return value?.constructor === Object },
 
-/**
- * Deep copy the source plain object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied.
- *
- * @param source the source object
- * @returns a new plain object if the source is a plain object; otherwise, the source itself
- */
-Object.copy = function(source) {
-  return Object.merge(source)
-}
+  /**
+  * Deep copy the source plain object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied.
+  *
+  * @param source the source object
+  * @returns a new plain object if the source is a plain object; otherwise, the source itself
+  */
+  copy(source) { return this.merge(source) },
 
-/**
- * Deep merge the source plain object to the target object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied to the target.
- *
- * @param source the source object
- * @param target the target object
- * @returns the source object itself if it's a non-plain object; 
- *          otherwise, the target object with its properties graph/hierarchy being overriden from the source object's properties graph/hierarchy.
- */
-Object.merge = function(source, target = {}) {
-  if(!isPlainObject(source)) return source
+  /**
+  * Deep merge the source plain object to the target object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied to the target.
+  *
+  * @param source the source object
+  * @param target the target object
+  * @returns the source object itself if it's a non-plain object; 
+  *          otherwise, the target object with its properties graph/hierarchy being overriden from the source object's properties graph/hierarchy.
+  */
+  merge(source, target = {}) {
+    if(!this.is(source)) return source
 
-  for(const key in source) {
-    target[key] = Object.merge(source[key], target[key])
-  }
-  return target
-}
-
-function propertyOf(object, key) {
-  return {
-    get: () => object[key],
-    set: (value) => object[key] = value
+    for(const key in source) {
+      target[key] = this.merge(source[key], target[key])
+    }
+    return target
   }
 }

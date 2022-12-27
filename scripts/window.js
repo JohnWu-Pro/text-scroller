@@ -103,7 +103,7 @@ function createElement(tag, attributes) {
 function openMarkdown(title, uri) {
   title = title ? encodeURIComponent(title) : ''
   uri = uri ? encodeURIComponent(uri) : ''
-  const url = `${SITE_BASE}/markdown.html?title=${title}&md=${uri}`
+  const url = `${APP_BASE}/markdown.html?title=${title}&md=${uri}`
 
   window.open(url, '_blank', `
     resizable=yes

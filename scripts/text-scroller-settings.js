@@ -2,7 +2,7 @@
 
 class Settings {
   static DEFAULT = Object.freeze({
-    version: '0.9',
+    version: '0.9.1',
 
     activeTab: 'text',
 
@@ -19,9 +19,11 @@ class Settings {
     }),
 
     glow: Object.freeze({
+      RADIUS_RATIOS: [0.04, 0.15, 0.40],
       radius: 5,    // [0:OFF, 1..5..10]
                     // 10 == foreground-font-size
       use: 'customized', // foreground | customized
+      COLOR_RATIOS: [0.2, 0.7, 1.0],
       color: Object.freeze({
         red: 192,   // 0..255
         green: 255, // 0..255
@@ -40,8 +42,6 @@ class Settings {
       url: '',
     })
   })
-  static #RADIUS_RATIOS = [0.04, 0.15, 0.40]
-  static #COLOR_RATIOS = [0.2, 0.7, 1.0]
 
   static #instance = undefined
   static {
@@ -54,9 +54,9 @@ class Settings {
   static get scrollable() { return Settings.#instance.speed > 0 }
 
   static import(settings) { 
-    Settings.#instance = Settings.#instance ?? Object.copy(Settings.DEFAULT) 
+    Settings.#instance = Settings.#instance ?? PlainObject.copy(Settings.DEFAULT) 
     if(settings?.version && settings.version <= Settings.DEFAULT.version) {
-      Object.merge(settings, Settings.#instance)
+      PlainObject.merge(settings, Settings.#instance)
     }
   }
 
@@ -86,10 +86,10 @@ class Settings {
     }
 
     const base = settings.foreground.size * settings.glow.radius / 10
-    const sizes = Settings.#RADIUS_RATIOS.map(it => it * base)
+    const sizes = settings.glow.RADIUS_RATIOS.map(it => it * base)
     const colors = settings.glow.use === 'foreground'
-        ? Array(Settings.#COLOR_RATIOS.length).fill(settings.foreground.color)
-        : Settings.#COLOR_RATIOS.map(ratio => Settings.#Color.interpolate(settings.foreground.color, settings.glow.color, ratio))
+        ? Array(settings.glow.COLOR_RATIOS.length).fill(settings.foreground.color)
+        : settings.glow.COLOR_RATIOS.map(ratio => Settings.#Color.interpolate(settings.foreground.color, settings.glow.color, ratio))
     rootStyle.setProperty('--text-shadow', sizes.map((size, index) => `0 0 ${size}vmin ${Settings.#Color.stringOf(colors[index])}`).join(', '))
     rootStyle.setProperty('--animation-duration', settings.glow.duration + 'ms')
     content.classList.add(settings.glow.duration > 0 ? 'shadow-animation' : 'static-shadow')
@@ -436,8 +436,7 @@ class Settings {
           })
 
           colorPanel.onChanged(() => {
-            settings.background.use = 'color'
-            updateRadios(radios, settings.background.use)
+            updateRadios(radios, (settings.background.use = 'color'))
             Settings.applyBackground(rootStyle)
           })
 
@@ -446,8 +445,7 @@ class Settings {
             const reader = new FileReader()
             reader.onload = (event) => {
               settings.background.url = event.target.result
-              settings.background.use = 'image'
-              updateRadios(radios, settings.background.use)
+              updateRadios(radios, (settings.background.use = 'image'))
               Settings.applyBackground(rootStyle)
             }
             reader.readAsDataURL(file)
@@ -478,17 +476,19 @@ class Settings {
           const withSettings = $E('.share input[type="checkbox"]', div)
           const container = $E('div.qrcode', div)
           function renderQrcode() {
-            let url = location.origin + location.pathname + location.search
-            if(withSettings.checked) {
-              const settings = Object.copy(Settings.#instance)
+            const text = !withSettings.checked ? location.href : ((href) => {
+              const settings = PlainObject.copy(Settings.#instance)
               settings.background.url = ''
-              url += (location.search ? '&' : '?') + 'settings=' + Base64.UrlSafe.encodeFromString(JSON.stringify(settings))
-            }
-            url += location.hash
+
+              const url = new URL(href)
+              url.searchParams.set('settings', Base64.UrlSafe.encodeFromString(JSON.stringify(settings)))
+              return url.href
+            })(location.href)
+            // console.debug("QR code text length: %o", text.length)
 
             container.innerHTML = ''
             new QRCode(container, {
-              text: url,
+              text,
               width: 224,
               height: 224,
               quietZone: 8,
@@ -520,6 +520,7 @@ class Settings {
             <div class="tab-label">${T('settings.tab-label.' + tab)}</div>
           </div>`, '') + `
         </div>
+        <div class="settings-pad"></div>
       `
       $content = $E('.settings-content', $view)
 
