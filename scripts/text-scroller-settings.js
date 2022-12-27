@@ -467,9 +467,9 @@ class Settings {
               </div>
             </div>
             <div class="copyright">
-              <span>${T('footer.readme')}</span>.
+              <span><a href="javascript:openMarkdown('${T('footer.readme')}', '${CONTEXT_PATH}/README.md')">${T('footer.readme')}</a></span>.
               <span style="white-space: nowrap;">
-                <a href="javascript:openDoc('LICENSE.txt', 'License')" title="License">${T('footer.copyright')}&copy; 2022</a>
+                <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>
                 <a href="mailto: johnwu.pro@gmail.com" target="_blank">${T('footer.owner')}</a>,
                 ${T('footer.licensed-under')}<a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
               </span>

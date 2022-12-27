@@ -109,10 +109,7 @@ function shouldPolyfillIntallPrompt() {
 // Register service worker
 //
 if(navigator.serviceWorker) {
-  const pos = HREF_BASE.lastIndexOf('/')
-  const base = HREF_BASE.substring(0, pos)
-  const locale = HREF_BASE.substring(pos + 1)
-  const servieWorkerUrl = `${base}/service-worker.js?locale=${locale}`
+  const servieWorkerUrl = `${SITE_BASE}/service-worker.js?locale=${LOCALE}`
   // console.debug("[DEBUG] Going to regiester the service worker at %s ...", servieWorkerUrl)
   navigator.serviceWorker.register(servieWorkerUrl)
 } else {

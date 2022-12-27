@@ -34,11 +34,12 @@ values: {
   "settings.share": "分享",
   "settings.share.with-settings": "包含我的设置",
 
-  "install.add-to-home-screen": "安装到桌面",
+  "install.add-to-home-screen": "添加到桌面",
   "install.demo.acknowledge": "已了解!",
 
   "footer.copyright": "版权所有",
   "footer.owner": "吴菊华",
+  "footer.license": "版权许可",
   "footer.licensed-under": "适用版权许可",
   "footer.readme": "自述文件",
 }

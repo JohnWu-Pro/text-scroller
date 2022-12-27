@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <script src="libs/marked.min.js" data-cacheable type="text/javascript"></script>
+  <script>
+    function params() {
+      const params = new URLSearchParams(location.search)
+
+      const uri = ((uri) => {
+        uri = uri ? decodeURIComponent(uri) : 'README.md'
+        if(RegExp('^https?://\\w+.+$').test(uri)) { // absolute HTTP URI
+          return uri
+        } else if(uri.startsWith('/')) { // origin relative URI
+          return location.origin + uri
+        } else { // page relative URI
+          return location.href.substring(0, location.href.lastIndexOf('/')) + '/' + uri
+        }
+      })(params.get('md'))
+
+      const title = ((title, uri) => {
+        if(title) return decodeURIComponent(title)
+
+        const left = uri.lastIndexOf('/')
+        const right = uri.lastIndexOf('.')
+        return left+1 < right ? uri.substring(left+1, right) : ''
+      })(params.get('title'), uri)
+
+      return {title, uri}
+    }
+
+    //
+    // Initialize
+    //
+    document.addEventListener("DOMContentLoaded", () => {
+      const {title, uri} = params()
+      document.title = title
+      fetch(uri)
+        .then((response) => response.text())
+        .then((markdown) => document.body.innerHTML = marked.parse(markdown))
+        .then(() => console.info("[INFO] Loaded %s.", uri))
+        .catch(error => console.error("[ERROR] Error occurred: %o", error))
+    })
+  </script>
+</head>
+
+<body>
+  <h2>Loading ...</h2>
+</body>
+
+</html>

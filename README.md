@@ -1,4 +1,4 @@
-# Text Scroller / 闪屏弹幕
+# Text Scroller
 
 https://play.google.com/store/apps/details?id=com.ttnnapps.LedTextDisplay&hl=en_CA&gl=US&pli=1
 
@@ -17,12 +17,14 @@ v Foreground
 v Background
    v Color
    v Image
+   + Image orientation
+   + web image
 v What if the site is not responding
 v Refine icons and favicon
-+ Render README.md & LICENSE.md, via More, in new page
-   + Markdown rendering
-   + Replace openDoc
-+ README per language
+v Render README.md & LICENSE.md, via More, in new page
+   v Markdown rendering
+   v Replace openDoc
+v README per language
 + English version
 v More
    v Share via qrcode

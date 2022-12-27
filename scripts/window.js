@@ -100,21 +100,20 @@ function createElement(tag, attributes) {
   return Object.assign(document.createElement(tag), attributes)
 }
 
-function openDoc(url, name) {
-  const height = screen.height/2
-  const width = screen.width/2
-  const top = height/2
-  const left = width/2
-  const features = `
+function openMarkdown(title, uri) {
+  title = title ? encodeURIComponent(title) : ''
+  uri = uri ? encodeURIComponent(uri) : ''
+  const url = `${SITE_BASE}/markdown.html?title=${title}&md=${uri}`
+
+  window.open(url, '_blank', `
     resizable=yes
     ,menubar=no
     ,toolbar=no
     ,scrollbars=yes
     ,status=no
-    ,top=${top},screenY=${top}
-    ,left=${left},screenX=${left}
-    ,height=${height}
-    ,width=${width}
-  `
-  window.open(url, name, features);
+    ,top=0,screenY=0
+    ,left=0,screenX=0
+    ,height=${screen.height}
+    ,width=${screen.width}
+  `);
 }

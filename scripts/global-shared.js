@@ -7,6 +7,20 @@
 const HREF_BASE = hrefBase(location)
 const CONTEXT_PATH = contextPath(location)
 
+const {SITE_BASE, LOCALE} = ((base) => {
+  let LOCALE = resolveNavigatorLocale()
+
+  if(base.endsWith('/' + LOCALE)) {
+    return {SITE_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
+  } else if(LOCALE.length > 2) {
+    LOCALE = LOCALE.substring(0, 2)
+    if(base.endsWith('/' + LOCALE)) {
+      return {SITE_BASE: base.substring(0, base.length - (LOCALE.length+1)), LOCALE}
+    }
+  }
+  return {SITE_BASE: base, LOCALE: ''}
+})(HREF_BASE)
+
 function delay(millis, value) {
   return new Promise(resolve => setTimeout(() => resolve(value), millis))
 }
