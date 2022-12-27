@@ -1,0 +1,9 @@
+# Build Directories and Files
+/build/
+/target/
+
+# IDE Directories and Files
+/.vscode/
+
+# Temporary Directories and Files
+/Notes.md
