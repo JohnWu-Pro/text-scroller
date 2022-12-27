@@ -1,45 +1,4 @@
-# Text Scroller
-
-https://play.google.com/store/apps/details?id=com.ttnnapps.LedTextDisplay&hl=en_CA&gl=US&pli=1
-
-https://www.jqueryscript.net/blog/best-custom-qr-code-generator.html
-https://github.com/ushelp/EasyQRCodeJS
-
-# TODOs
-v Text
-   v Tweak icon
-   v Position in Firefox
-v Foreground
-   v Color
-   v Scrolling Speed
-   v Size
-   v Glow Effect, Frequency
-v Background
-   v Color
-   v Image
-   + Image orientation
-   + web image
-v What if the site is not responding
-v Refine icons and favicon
-v Render README.md & LICENSE.md, via More, in new page
-   v Markdown rendering
-   v Replace openDoc
-v README per language
-+ English version
-v More
-   v Share via qrcode
-   v QRCode background opaque
-   v Honor shared settings
-   v Copyright and license
-v Refine Add to Home Screen (less aggressive)
-
-v Full screen
-v Landscape orientation
-v Configuration panel dock to bottom (portrait) or right (landscape)
-   + Sliding in configuration panel
-v Auto hide configuration panel
-v Save settings
-+ Beautify switch control
+# [Text Scroller](en/README.md) / [闪屏弹幕](zh-CN/README.md)
 
 # Project Development
 
