@@ -2,7 +2,7 @@
 
 class Settings {
   static DEFAULT = Object.freeze({
-    version: '0.9.1',
+    version: '0.9.2',
 
     activeTab: 'text',
 
@@ -44,20 +44,22 @@ class Settings {
   })
 
   static #instance = undefined
-  static {
-    State.load()
-    .then((cache) => Settings.import(cache.settings))
-    // .then(() => console.debug("[DEBUG] Loaded settings: %s", JSON.stringify(Settings.#instance)))
+  static load() {
+    return State.load()
+      .then((cache) => Settings.import(cache.settings))
+      // .then(() => console.debug("[DEBUG] Loaded settings: %s", JSON.stringify(Settings.#instance)))
   }
 
   static get text() { return Settings.#instance.text }
   static get scrollable() { return Settings.#instance.speed > 0 }
 
-  static import(settings) { 
+  static import(settings) {
+    // console.debug("Importing settings: %s", JSON.stringify(settings))
     Settings.#instance = Settings.#instance ?? PlainObject.copy(Settings.DEFAULT) 
     if(settings?.version && settings.version <= Settings.DEFAULT.version) {
       PlainObject.merge(settings, Settings.#instance)
     }
+    // console.debug("Merged settings: %s", JSON.stringify(Settings.#instance))
   }
 
   static save() { return State.set({settings: Settings.#instance}) }
@@ -464,45 +466,39 @@ class Settings {
                 <div class="qrcode"></div>
               </div>
             </div>
+            <div class="app">
+              <a href="javascript:openMarkdown('${T('app.name')}', '${CONTEXT_PATH}/README.md')">${T('app.name')}</a>
+              <span>${T('footer.version')} ${Settings.DEFAULT.version}</span>
+            </div>
             <div class="copyright">
-              <span>
-                <a href="javascript:openMarkdown('${T('app.name')}', '${CONTEXT_PATH}/README.md')">${T('app.name')}</a>
-                <span>${T('footer.version')} ${Settings.DEFAULT.version}</span>
-              </span><br/>
-              <br/>
-              <span>
-                <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>
-                <a href="mailto: johnwu.pro@gmail.com" target="_blank">${T('footer.owner')}</a>,
-                ${T('footer.licensed-under')}
-                <a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
-              </span>
+              <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>
+              <a href="mailto: johnwu.pro@gmail.com" target="_blank">${T('footer.owner')}</a>,
+              ${T('footer.licensed-under')}
+              <a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
             </div>
           `
           const withSettings = $E('.share input[type="checkbox"]', div)
           const container = $E('div.qrcode', div)
+
           function renderQrcode() {
-            const text = !withSettings.checked ? location.href : ((href) => {
+            const url = new URL(location.href)
+            url.search = ''
+            url.searchParams.set('v', new Date().toISOString().replace(/^(\d{4})-(\d{2})-(\d{2}).{10}(\d{3}).+$/, '$1$2$3$4'))
+            if(withSettings.checked) {
               const settings = PlainObject.copy(Settings.#instance)
-              settings.background.url = ''
+              settings.activeTab = Settings.DEFAULT.activeTab
+              settings.background.url = '' // TODO: Support web image
 
-              const json = JSON.stringify(settings)
-              // console.debug("JSON.stringify(settings).length: %d", json.length)
-              const compressed = LZString.compressToUint8Array(json)
-              // console.debug("LZString.compressToUint8Array(json).length: %d", compressed.length)
-              const encoded = Base64.UrlSafe.encode(compressed)
-              // console.debug("Base64.UrlSafe.encode(compressed).length: %d", encoded.length)
-
-              const url = new URL(href)
-              url.searchParams.set('settings', encoded)
-              return url.href
-            })(location.href)
+              url.searchParams.set('settings', Base64.UrlSafe.encode(LZString.compressToUint8Array(JSON.stringify(settings))))
+            }
+            const text = url.href
             // console.debug("QR code text(%o): %s", text.length, text)
 
             container.innerHTML = ''
             new QRCode(container, {
               text,
-              width: 224,
-              height: 224,
+              width: 216,
+              height: 216,
               quietZone: 8,
               quietZoneColor: '#40C040',
               logo: HREF_BASE + '/images/icon-64x64.png',
@@ -547,6 +543,7 @@ class Settings {
 
     function renderTab(tabDiv) {
       const settings = Settings.#instance
+      // console.debug("Live settings: %s", JSON.stringify(settings))
       const prevTab = $E('.settings-tab.' + settings.activeTab, $view)
       if(prevTab !== tabDiv) prevTab.classList.remove('selected')
 

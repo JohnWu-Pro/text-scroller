@@ -24,12 +24,12 @@ window.App = window.App ?? (() => {
     window.addEventListener("settings-closed", () => window.dispatchEvent(new CustomEvent('show-menu')))
 
     return loadSettings()
-        .then(() => TextScroller.init())
-        .then(() => TextScroller.start())
-        .then(() => Menu.init())
-        .then(() => Menu.show())
-        .then(() => appendElement('div', {className: 'overlay hidden'}))
-        .then(() => Settings.View.init())
+      .then(() => TextScroller.init())
+      .then(() => TextScroller.start())
+      .then(() => Menu.init())
+      .then(() => Menu.show())
+      .then(() => appendElement('div', {className: 'overlay hidden'}))
+      .then(() => Settings.View.init())
   }
 
   function onActivate() {
@@ -43,12 +43,15 @@ window.App = window.App ?? (() => {
     const encoded = new URLSearchParams(location.search).get('settings')
     if(encoded) {
       return Promise.resolve()
-          .then(() => JSON.parse(LZString.decompressFromUint8Array(Base64.UrlSafe.decode(encoded))))
-          .then((settings) => Settings.import(settings))
-          .catch(error => console.error("[ERROR] Error occurred while trying to resolve and/or import settings: %o", error))
-          .then(State.load)
+        .then(() => JSON.parse(LZString.decompressFromUint8Array(Base64.UrlSafe.decode(encoded))))
+        .then((settings) => Settings.import(settings))
+        .then(() => Settings.save())
+        .catch(error => {
+          console.error("[ERROR] Error occurred while trying to resolve and/or import settings: %o", error)
+          return Settings.load()
+        })
     } else {
-      return State.load()
+      return Settings.load()
     }
   }
 
@@ -57,9 +60,9 @@ window.App = window.App ?? (() => {
   //
   document.addEventListener("DOMContentLoaded", () =>
     Promise.resolve()
-        .then(launch)
-        .then(() => console.info("[INFO] Launched TextScroller App."))
-        .catch(error => console.error("[ERROR] Error occurred: %o", error))
+      .then(launch)
+      .then(() => console.info("[INFO] Launched TextScroller App."))
+      .catch(error => console.error("[ERROR] Error occurred: %o", error))
   )
 
 })()
