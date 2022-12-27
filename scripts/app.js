@@ -5,7 +5,7 @@ const APP_ID = 'text-scroller'
 window.App = window.App ?? (() => {
 
   function launch() {
-    document.title = T('document.title')
+    document.title = T('app.name')
 
     document.addEventListener("visibilitychange", () => {
       if(document.visibilityState === 'visible') {
@@ -40,10 +40,10 @@ window.App = window.App ?? (() => {
   }
 
   function loadSettings() {
-    const param = new URLSearchParams(location.search).get('settings')
-    if(param) {
+    const encoded = new URLSearchParams(location.search).get('settings')
+    if(encoded) {
       return Promise.resolve()
-          .then(() => JSON.parse(Base64.UrlSafe.decodeToString(param)))
+          .then(() => JSON.parse(LZString.decompressFromUint8Array(Base64.UrlSafe.decode(encoded))))
           .then((settings) => Settings.import(settings))
           .catch(error => console.error("[ERROR] Error occurred while trying to resolve and/or import settings: %o", error))
           .then(State.load)

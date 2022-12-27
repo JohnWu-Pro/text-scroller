@@ -330,6 +330,10 @@ div.label > label[for="bg-image"] {
   justify-content: center;
 }
 
+div.copyright span {
+  white-space: nowrap;
+}
+
 div.copyright,
 div.copyright a {
   text-align: center;

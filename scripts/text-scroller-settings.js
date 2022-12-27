@@ -29,7 +29,7 @@ class Settings {
         green: 255, // 0..255
         blue: 192   // 0..255
       }),
-      duration: 1000,// [0:OFF, 1..10..100] x 100ms --log()--> [-step, 0..1..2]
+      duration: 0,  // [0:OFF, 1..10..100] x 100ms --log()--> [-step, 0..1..2]
     }),
 
     background: Object.freeze({
@@ -465,11 +465,16 @@ class Settings {
               </div>
             </div>
             <div class="copyright">
-              <span><a href="javascript:openMarkdown('${T('footer.readme')}', '${CONTEXT_PATH}/README.md')">${T('footer.readme')}</a></span>.
-              <span style="white-space: nowrap;">
+              <span>
+                <a href="javascript:openMarkdown('${T('app.name')}', '${CONTEXT_PATH}/README.md')">${T('app.name')}</a>
+                <span>${T('footer.version')} ${Settings.DEFAULT.version}</span>
+              </span><br/>
+              <br/>
+              <span>
                 <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>
                 <a href="mailto: johnwu.pro@gmail.com" target="_blank">${T('footer.owner')}</a>,
-                ${T('footer.licensed-under')}<a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
+                ${T('footer.licensed-under')}
+                <a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
               </span>
             </div>
           `
@@ -480,11 +485,18 @@ class Settings {
               const settings = PlainObject.copy(Settings.#instance)
               settings.background.url = ''
 
+              const json = JSON.stringify(settings)
+              // console.debug("JSON.stringify(settings).length: %d", json.length)
+              const compressed = LZString.compressToUint8Array(json)
+              // console.debug("LZString.compressToUint8Array(json).length: %d", compressed.length)
+              const encoded = Base64.UrlSafe.encode(compressed)
+              // console.debug("Base64.UrlSafe.encode(compressed).length: %d", encoded.length)
+
               const url = new URL(href)
-              url.searchParams.set('settings', Base64.UrlSafe.encodeFromString(JSON.stringify(settings)))
+              url.searchParams.set('settings', encoded)
               return url.href
             })(location.href)
-            // console.debug("QR code text length: %o", text.length)
+            // console.debug("QR code text(%o): %s", text.length, text)
 
             container.innerHTML = ''
             new QRCode(container, {
