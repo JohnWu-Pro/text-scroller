@@ -131,40 +131,49 @@ body {
   --overlay-background: rgb(32, 32, 32);
   --overlay-opacity: 0.8;
 }
-.overlay > div {
+
+.settings-view {
+  display: flex;
+  font-family: var(--main-font-family);
   height: calc(100% - 4px);
+  width: calc(100% - 4px);
   border: 2px solid grey;
   border-radius: 1vmin;
 }
-
-.settings-view {
-  font-family: var(--main-font-family);
-}
-
-.settings-view,
-.settings-tab {
-  display: flex;
-}
-
-.settings-tabs {
-  display: flex;
-  justify-content: space-evenly;
+.settings-view > .settings-content {
+  flex-basis: 80%;
   background-color: var(--overlay-background);
   opacity: var(--overlay-opacity);
-}
 
-.settings-view > :first-child,
-.settings-tab > :first-child {
-  flex-basis: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  font-size: medium;
+  font-weight: bold;
+  text-align: center;
 }
-.settings-view > :last-child {
+.settings-view > .settings-tabs {
   flex-basis: 18%;
+  background-color: var(--overlay-background);
+  opacity: var(--overlay-opacity);
+
+  display: flex;
+  justify-content: space-evenly;
+}
+.settings-view > .settings-pad {
+  flex-basis: 2%;
+  background-color: var(--overlay-background);
+  opacity: var(--overlay-opacity);
 }
 
 .settings-tab {
   border: none;
   border-radius: 2vmin;
   background-color: var(--button-color);
+  display: flex;
+}
+.settings-tab > :first-child {
+  flex-basis: 80%;
 }
 
 .settings-tab.text > .tab-icon::after {
@@ -204,16 +213,6 @@ body {
   font-weight: bold;
 }
 
-.settings-content {
-  font-size: medium;
-  font-weight: bold;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background-color: var(--overlay-background);
-  opacity: var(--overlay-opacity);
-}
 .settings-content.foreground > div:first-child,
 .settings-content.glow > div:first-child,
 .settings-content.background > div:first-child,
@@ -326,7 +325,6 @@ div.label > label[for="bg-image"] {
   opacity: 1;
 }
 .settings-content.more .share div.input {
-  height: 248px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -349,9 +347,6 @@ a, a:hover, a:visited {
     width: 100vmin; height: 100vmin;
   }
 
-  .settings-view {
-    padding-right: 2vmin;
-  }
   .settings-view,
   .settings-tab {
     flex-direction: row;
@@ -368,13 +363,10 @@ a, a:hover, a:visited {
 }
 @media (orientation: portrait) {
   .overlay {
-    left: 0; top: calc(100dvh - 96vmin);
-    width: 100vmin; height: 96vmin;
+    left: 0; top: calc(100dvh - 100vmin);
+    width: 100vmin; height: 100vmin;
   }
 
-  .settings-view {
-    padding-bottom: 2vmin;
-  }
   .settings-view,
   .settings-tab {
     flex-direction: column;
