@@ -23,4 +23,4 @@
 + 可以在线运行，更适于**添加到手机桌面上**（从而支持离线运行）。
 
 # 访问网址
-#### https://johnwu-pro.github.io/text-scorller/zh-CN/index.html
+#### https://johnwu-pro.github.io/text-scroller/zh-CN/index.html
