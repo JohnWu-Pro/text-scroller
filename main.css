@@ -271,7 +271,7 @@ body {
 
 .settings-content div.label {
   color: var(--label-color);
-  margin: 0 1vmin 0 4vmin;
+  margin: 0 1vmin 0 2vmin;
   text-align: left;
 }
 
