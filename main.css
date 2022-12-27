@@ -148,9 +148,10 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  text-align: center;
   font-size: medium;
   font-weight: bold;
-  text-align: center;
+  color: var(--label-color);
 }
 .settings-view > .settings-tabs {
   flex-basis: 18%;
@@ -221,8 +222,7 @@ body {
 }
 .settings-content.foreground > div:not(:first-child):not(:last-child),
 .settings-content.glow > div:not(:first-child):not(:last-child),
-.settings-content.background > div:not(:first-child):not(:last-child),
-.settings-content.more > div:not(:first-child):not(:last-child) {
+.settings-content.background > div:not(:first-child):not(:last-child) {
   margin: 0 2vmin;
   border-top: 1px solid var(--disabled-color);
   padding: 1vmin 0;
@@ -269,7 +269,6 @@ body {
 }
 
 .settings-content div.label {
-  color: var(--label-color);
   margin: 0 1vmin 0 2vmin;
   text-align: left;
 }
@@ -323,6 +322,8 @@ div.label > label[for="bg-image"] {
 
 .settings-content.more {
   opacity: 1;
+  justify-content: space-around;
+  white-space: nowrap;
 }
 .settings-content.more .share div.input {
   display: flex;
@@ -330,18 +331,19 @@ div.label > label[for="bg-image"] {
   justify-content: center;
 }
 
-div.copyright span {
-  white-space: nowrap;
+div.app,
+div.copyright {
+  text-align: center;
 }
 
 div.copyright,
 div.copyright a {
-  text-align: center;
-  font: 3vmin var(--main-font-family);
   color: #d0d0d0;
+  font: 3vmin var(--main-font-family);
 }
 
 a, a:hover, a:visited {
+  color: var(--label-color);
   text-decoration: underline dotted;
 }
 
