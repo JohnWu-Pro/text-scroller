@@ -46,20 +46,27 @@ class Settings {
   static #instance = undefined
   static load() {
     return State.load()
-      .then((cache) => Settings.import(cache.settings))
+      .then((cache) => Settings.merge(cache.settings))
+      .then((settings) => {
+        if(settings.version < Settings.DEFAULT.version) {
+          settings.version = Settings.DEFAULT.version
+          Settings.save()
+        }
+      })
       // .then(() => console.debug("[DEBUG] Loaded settings: %s", JSON.stringify(Settings.#instance)))
   }
 
   static get text() { return Settings.#instance.text }
   static get scrollable() { return Settings.#instance.speed > 0 }
 
-  static import(settings) {
+  static merge(settings) {
     // console.debug("Importing settings: %s", JSON.stringify(settings))
     Settings.#instance = Settings.#instance ?? PlainObject.copy(Settings.DEFAULT) 
-    if(settings?.version && settings.version <= Settings.DEFAULT.version) {
+    if(settings?.version && settings.version <= Settings.#instance.version) {
       PlainObject.merge(settings, Settings.#instance)
     }
     // console.debug("Merged settings: %s", JSON.stringify(Settings.#instance))
+    return Settings.#instance
   }
 
   static save() { return State.set({settings: Settings.#instance}) }

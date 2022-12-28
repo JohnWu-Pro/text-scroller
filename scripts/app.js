@@ -44,7 +44,8 @@ window.App = window.App ?? (() => {
     if(encoded) {
       return Promise.resolve()
         .then(() => JSON.parse(LZString.decompressFromUint8Array(Base64.UrlSafe.decode(encoded))))
-        .then((settings) => Settings.import(settings))
+        .then((settings) => Settings.merge(settings))
+        .then((settings) => settings.version = Settings.DEFAULT.version)
         .then(() => Settings.save())
         .catch(error => {
           console.error("[ERROR] Error occurred while trying to resolve and/or import settings: %o", error)
