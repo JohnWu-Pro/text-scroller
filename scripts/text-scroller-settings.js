@@ -2,7 +2,7 @@
 
 class Settings {
   static DEFAULT = Object.freeze({
-    version: '0.9.3',
+    version: Config.version,
 
     activeTab: 'text',
 

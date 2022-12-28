@@ -9,24 +9,30 @@
 
 const APP_ID = 'text-scroller'
 
+//
+// NOTE: Update this constant would trigger the Service Worker being updated, and
+// consequently, triggers the static-cachable-resources being updated.
+//
+const APP_VERSION = '0.9.3.1' 
+
 const CONTEXT_PATH = (() => {
   // NOTE: location.href points to the location of this script
   const contextPath = location.pathname.substring(0, location.pathname.lastIndexOf('/'))
   const locale = new URLSearchParams(location.search).get('locale')
   return locale ? contextPath + '/' + locale : contextPath
 })()
-// console.debug("[DEBUG] [ServiceWorker] CONTEXT_PATH: %s, location: %o", CONTEXT_PATH, location)
+console.debug("[DEBUG] [ServiceWorker] CONTEXT_PATH: %s, location: %o", CONTEXT_PATH, location)
 
 const INDEX_HTML = `${CONTEXT_PATH}/index.html`
 
 const CACHE_NAME = 'cache.' + APP_ID + '.resources'
 
 self.addEventListener('install', function(event) {
-  // console.debug("[DEBUG] Calling ServiceWorker.install(%o) ...", event)
+  console.install("[INFO] Calling ServiceWorker().install(%s) ...", APP_VERSION, JSON.stringify(event))
 
   event.waitUntil(
     cacheStaticResources()
-    .catch(error => console.error(error))
+      .catch(error => console.error(error))
   )
 
   // Trigger installed service worker to progress into the activating state
@@ -42,10 +48,10 @@ self.addEventListener('activate', function(event) {
     if(self.registration.navigationPreload) {
       await self.registration.navigationPreload.enable()
     }
-  })())
 
-  // Tell the active service worker to take control of the page immediately.
-  self.clients.claim()
+    // Tell the active service worker to take control of the page immediately.
+    await self.clients.claim()
+  })())
 })
 
 self.addEventListener('fetch', function(event) {
@@ -141,7 +147,7 @@ function resolveStaticCachableResources(indexHtml) {
 function putIn(cache, request, response) {
   response = response.clone()
   cache.delete(request, {ignoreSearch : true})
-  .then(() => cache.put(request, response))
+    .then(() => cache.put(request, response))
 }
 
 })()
