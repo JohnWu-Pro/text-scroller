@@ -6,5 +6,5 @@ const Config = Object.freeze({
 
   supportedLocales: ['en', 'zh-CN'],
 
-  version: '0.9.3.3'
+  version: '0.9.3-B4'
 })

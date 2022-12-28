@@ -10,10 +10,10 @@
 const APP_ID = 'text-scroller'
 
 //
-// NOTE: Update this constant would trigger the Service Worker being updated, and
-// consequently, triggers the static-cachable-resources being updated.
+// NOTE: Update the APP_VERSION would trigger the Service Worker being updated, and
+// consequently, triggers the static-cachable-resources being refreshed.
 //
-const APP_VERSION = '0.9.3.3' 
+const APP_VERSION = '0.9.3-B4'
 
 const CONTEXT_PATH = (() => {
   // NOTE: location.href points to the location of this script
@@ -84,7 +84,7 @@ self.addEventListener('fetch', function(event) {
 
     // Next, try to fetch the resource from the network
     // console.debug("[DEBUG] Trying to fetch and cache %o ...", request)
-    response = await fetch(request)
+    response = await fetch(new Request(request, {body: new URLSearchParams({v: APP_VERSION})}))
     if(isCacheable(response)) {
       putIn(cache, request, response)
       return response
@@ -109,8 +109,15 @@ async function cacheStaticResources() {
 
     const indexHtml = await response.clone().text()
     const resources = resolveStaticCachableResources(indexHtml)
-    console.debug("[DEBUG] Static cachable resources: %o", resources)
-    return await cache.addAll(resources)
+    // console.debug("[DEBUG] Static cachable resources: %o", resources)
+
+    resources.forEach(async (resource) => await cache.delete(resource, {ignoreSearch : true}))
+
+    return await cache.addAll(resources.map((resource) => {
+      const url = new URL(location.origin + resource)
+      url.searchParams.set('by', 'sw-ins')
+      return url.pathname + url.search + url.hash
+    }))
   } else {
     console.error("[ERROR] Failed in loading %s: %o", INDEX_HTML, response)
     throw "Failed in loading " + INDEX_HTML
