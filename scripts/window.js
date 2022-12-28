@@ -42,6 +42,27 @@ function $on(element, init) {
   }
 }
 
+function $stateful(element, init) {
+  if(init) init(element)
+
+  return {
+    perform(transition, reverse = false) {
+      return new Promise((resolve) => {
+        delay(1).then(() => {
+          element.addEventListener('transitionend', () => {
+            // element.classList.toggle(transition, reverse)
+            resolve(element)
+          }, {once: true})
+          element.classList.toggle(transition, !reverse)
+        })
+      })
+    },
+    revert(transition) {
+      return this.perform(transition, true)
+    }
+  }
+}
+
 function loadResources() {
   // console.debug("[DEBUG] Going to load resources at [%o] ...", [...arguments])
   let promise = Promise.resolve()

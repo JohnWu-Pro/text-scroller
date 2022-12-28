@@ -16,15 +16,17 @@ window.Menu = window.Menu ?? (() => {
   }
 
   function show() {
-    $show($overlay)
+    $stateful($overlay, () => $show($overlay)).perform('show')
 
     return Promise.resolve()
   }
 
   function onClicked() {
     // console.debug("[DEBUG] Calling Menu.onClicked() ...")
-    $hide($overlay)
-    window.dispatchEvent(new CustomEvent('menu-clicked'))
+    $stateful($overlay).revert('show').then(() => {
+      $hide($overlay)
+      window.dispatchEvent(new CustomEvent('menu-clicked'))
+    })
   }
 
   return {

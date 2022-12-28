@@ -112,6 +112,11 @@ body {
   z-index: 20; position: absolute;
   left: calc(100vw - 12vmin - 2vmin); top: 2vmin;
   width: 12vmin; height: 12vmin;
+  opacity: 0;
+  transition: opacity 600ms ease-in-out;;
+}
+.menu-overlay.show {
+  opacity: 1;
 }
 .menu {
   color: var(--scroller-background-color);
@@ -133,7 +138,7 @@ body {
 }
 .overlay.slide-in,
 .overlay.slide-out {
-  transition: transform 1s ease-in-out;
+  transition: transform 800ms ease-in-out;
 }
 
 .settings-view {
