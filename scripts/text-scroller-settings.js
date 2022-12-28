@@ -2,7 +2,7 @@
 
 class Settings {
   static DEFAULT = Object.freeze({
-    version: '0.9.2',
+    version: '0.9.3',
 
     activeTab: 'text',
 
@@ -557,14 +557,13 @@ class Settings {
     function show() {
       if(isVisible) return
 
-      $show($view)
-      $show($overlay)
-      isVisible = true
-
       // Render active tab
       renderTab($E('.settings-tab.' + Settings.#instance.activeTab, $view))
 
-      return Promise.resolve()
+      $show($view)
+      $show($overlay)
+      return slider().slideIn()
+        .then(() => isVisible = true)
     }
 
     function close() {
@@ -572,14 +571,50 @@ class Settings {
 
       Settings.save()
 
-      $content.innerHTML = ''
-      $E('.settings-tab.' + Settings.#instance.activeTab, $view).classList.remove('selected')
+      return slider().slideOut()
+        .then(() => {
+          isVisible = false
+          $hide($overlay)
+          $hide($view)
 
-      isVisible = false
-      $hide($overlay)
-      $hide($view)
+          $content.innerHTML = ''
+          $E('.settings-tab.' + Settings.#instance.activeTab, $view).classList.remove('selected')
 
-      window.dispatchEvent(new CustomEvent('settings-closed'))
+          window.dispatchEvent(new CustomEvent('settings-closed'))
+        })
+    }
+
+    const AbstractSlider = {
+        slideIn() {
+          this.initSlidingIn()
+          return $on($overlay).perform('slide-in').then(() => this.onSlidedIn())
+        },
+        slideOut: () => $on($overlay).perform('slide-out')
+    }
+    const sliders = {
+      landscape: {...AbstractSlider,
+        initSlidingIn: () => $overlay.style.left = '100dvw',
+        onSlidedIn: () => $overlay.style.left = ''
+      },
+      portrait: {...AbstractSlider,
+        initSlidingIn: () => $overlay.style.top = '100dvh',
+        onSlidedIn: () => $overlay.style.top = ''
+      }
+    }
+
+    function slider() {
+      // console.debug("[DEBUG] screen.orientation.type: %s", screen.orientation.type)
+      switch (screen.orientation.type) {
+        case "landscape-primary":
+        case "landscape-secondary": // the screen is upside down!
+          return sliders.landscape
+        case "portrait-primary":
+        case "portrait-secondary":
+          return sliders.portrait
+        default:
+          console.warn("The orientation API isn't supported in this browser :(")
+          return sliders.landscape
+      }
     }
 
     return {

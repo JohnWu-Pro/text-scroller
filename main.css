@@ -131,6 +131,10 @@ body {
   --overlay-background: rgb(32, 32, 32);
   --overlay-opacity: 0.8;
 }
+.overlay.slide-in,
+.overlay.slide-out {
+  transition: transform 1s ease-in-out;
+}
 
 .settings-view {
   display: flex;
@@ -352,6 +356,12 @@ a, a:hover, a:visited {
     left: calc(100dvw - 100vmin); top: 0;
     width: 100vmin; height: 100vmin;
   }
+  .overlay.slide-in {
+    transform: translateX(-100%);
+  }
+  .overlay.slide-out {
+    transform: translateX(100%);
+  }
 
   .settings-view,
   .settings-tab {
@@ -371,6 +381,12 @@ a, a:hover, a:visited {
   .overlay {
     left: 0; top: calc(100dvh - 100vmin);
     width: 100vmin; height: 100vmin;
+  }
+  .overlay.slide-in {
+    transform: translateY(-100%);
+  }
+  .overlay.slide-out {
+    transform: translateY(100%);
   }
 
   .settings-view,
