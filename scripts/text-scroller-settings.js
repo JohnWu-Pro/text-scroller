@@ -2,7 +2,7 @@
 
 class Settings {
   static DEFAULT = Object.freeze({
-    version: Config.version,
+    version: APP_VERSION,
 
     activeTab: 'text',
 
@@ -475,7 +475,7 @@ class Settings {
             </div>
             <div class="app">
               <a href="javascript:openMarkdown('${T('app.name')}', '${CONTEXT_PATH}/README.md')">${T('app.name')}</a>
-              <span>${T('footer.version')} ${Settings.DEFAULT.version}</span>
+              <span>${T('app.version')} ${APP_VERSION}</span>
             </div>
             <div class="copyright">
               <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>
@@ -500,7 +500,7 @@ class Settings {
             }
             const text = url.href
             // console.debug("QR code text(%o): %s", text.length, text)
-
+            
             container.innerHTML = ''
             new QRCode(container, {
               text,
@@ -514,7 +514,7 @@ class Settings {
               logoBackgroundTransparent: true,
             })
           }
-          renderQrcode()
+          Promise.resolve().then(renderQrcode)
 
           withSettings.addEventListener('change', renderQrcode)
         }

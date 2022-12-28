@@ -4,6 +4,7 @@
 
 values: {
   "app.name": "闪屏弹幕",
+  "app.version": "版本",
 
   "settings.default.text": "闪屏弹幕 演示文本",
   "settings.tab-label.text": "文本",
@@ -38,7 +39,6 @@ values: {
   "install.add-to-home-screen": "添加到桌面",
   "install.demo.acknowledge": "已了解!",
 
-  "footer.version": "版本",
   "footer.copyright": "版权所有",
   "footer.owner": "吴菊华",
   "footer.license": "版权许可",
