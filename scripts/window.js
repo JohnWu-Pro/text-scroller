@@ -30,14 +30,11 @@ function $on(element, init) {
   return {
     perform(transition) {
       return new Promise((resolve) => {
-        const listener = () => {
-          element.classList.remove(transition)
-          element.removeEventListener('transitionend', listener)
-          resolve(element)
-        }
-
         delay(1).then(() => {
-          element.addEventListener('transitionend', listener)
+          element.addEventListener('transitionend', () => {
+            element.classList.remove(transition)
+            resolve(element)
+          }, {once: true})
           element.classList.add(transition)
         })
       })
