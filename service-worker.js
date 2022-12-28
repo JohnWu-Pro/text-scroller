@@ -130,12 +130,11 @@ function resolveStaticCachableResources(indexHtml) {
     CONTEXT_PATH + "/images/icon-144x144.png",
     CONTEXT_PATH + "/images/icon-192x192.png",
     CONTEXT_PATH + "/images/icon-512x512.png",
-    // CONTEXT_PATH + "/images/U1F860.left-arrow.png",
-    // CONTEXT_PATH + "/images/U2B73.down-arrow-to-bar.png",
-    // CONTEXT_PATH + "/images/U21A7.down-arrow-from-bar.png",
     ...styles.map(path => CONTEXT_PATH + '/' + path),
     ...scripts.map(path => CONTEXT_PATH + '/' + path),
-    CONTEXT_PATH + "/LICENSE.txt"
+    CONTEXT_PATH + "/LICENSE.md",
+    CONTEXT_PATH + "/README.md",
+    CONTEXT_PATH + "/../markdown.html"
   ]
 }
 
