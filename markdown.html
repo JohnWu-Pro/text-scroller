@@ -23,8 +23,9 @@
         if(title) return decodeURIComponent(title)
 
         const left = uri.lastIndexOf('/')
-        const right = uri.lastIndexOf('.')
-        return left+1 < right ? uri.substring(left+1, right) : ''
+        let right = uri.lastIndexOf('.', left+1)
+        if(right === -1) right = uri.length
+        return uri.substring(left+1, right)
       })(params.get('title'), uri)
 
       return {title, uri}
