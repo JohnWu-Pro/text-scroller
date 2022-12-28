@@ -28,7 +28,7 @@ const INDEX_HTML = `${CONTEXT_PATH}/index.html`
 const CACHE_NAME = 'cache.' + APP_ID + '.resources'
 
 self.addEventListener('install', function(event) {
-  console.install("[INFO] Calling ServiceWorker().install(%s) ...", APP_VERSION, JSON.stringify(event))
+  console.info("[INFO] Calling ServiceWorker(%s).install(%s) ...", APP_VERSION, JSON.stringify(event))
 
   event.waitUntil(
     cacheStaticResources()
