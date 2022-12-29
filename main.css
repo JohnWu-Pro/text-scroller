@@ -321,7 +321,7 @@ div.input > input.visually-hidden {
   clip-path: circle(0);
 }
 div.label > label[for="bg-image"],
-div.label > button#paste-image-url {
+div.label > #paste-image-url {
   border: 1px outset darkgray;
   border-radius: 1vmin;
   background-color: var(--button-color);

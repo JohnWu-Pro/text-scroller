@@ -429,7 +429,7 @@ class Settings {
                 <input type="radio" id="use-image" name="use" value="image">
                 <label for="use-image">${T('settings.image')}:</label>
                 <label for="bg-image">${T('settings.image.select')}</label>
-                <button id="paste-image-url">${T('settings.image.paste')}</button>
+                <label id="paste-image-url">${T('settings.image.paste')}</label>
               </div>
               <div class="input">
                 <input type="file" id="bg-image" accept="image/*" class="visually-hidden">
@@ -463,7 +463,7 @@ class Settings {
             reader.onload = (event) => setBackgroundUrl(event.target.result)
             reader.readAsDataURL(file)
           })
-          $E('.image button#paste-image-url', div).addEventListener('click', function() {
+          $E('.image #paste-image-url', div).addEventListener('click', function() {
             navigator.clipboard.readText()
               .then((text) => $E('.image #image-url-prompt', div).innerHTML = text)
               .then((url) => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
