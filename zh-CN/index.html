@@ -9,45 +9,46 @@
   <meta name="description" content="闪屏,弹幕,全屏滚动">
   <meta name="keywords" content="滚动,闪烁,全屏,闪屏,炫彩,弹幕">
 
-  <script>
-    // CAUTION:
-    // Please do leave the APP_VERSION here,
-    // to ensure this index.html is updated whenever the version is updated
-    //
-    const APP_VERSION = '0.9.5'
+  <link href="favicon.png" rel="shortcut icon" type="image/png" sizes="32x32">
 
-    document.querySelector(':root').style.setProperty('--default-font-family', '宋体')
-  </script>
-
-  <link rel="shortcut icon" href="favicon.png" type="image/png" sizes="32x32">
-
-  <link rel=stylesheet href="../main.css?v=20221229" data-cacheable type="text/css">
+  <link href="../main.css?v=20221229" data-cacheable rel=stylesheet type="text/css">
+  <script>document.querySelector(':root').style.setProperty('--default-font-family', '宋体')</script>
 
   <script src="../libs/base64-1.0.0.js" data-cacheable type="text/javascript"></script>
   <script src="../libs/easy.qrcode-4.4.13.min.js" data-cacheable type="text/javascript"></script>
   <script src="../libs/i18n.min.js" data-cacheable type="text/javascript"></script><!-- http://i18njs.com/ -->
   <script src="../libs/lz-string-1.4.4.min.js" data-cacheable type="text/javascript"></script>
 
-  <script src="i18n.resources.js?v=202212295" data-cacheable type="text/javascript"></script>
+  <script src="i18n.resources.js?v=20221229" data-cacheable type="text/javascript"></script>
 
-  <script src="../scripts/app.js?v=20221228" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/app.js?v=20221229" data-cacheable type="text/javascript"></script>
   <script src="../scripts/config.js?v=20221229" data-cacheable type="text/javascript"></script>
-  <script src="../scripts/global-shared.js?v=20221228" data-cacheable type="text/javascript"></script>
-  <script src="../scripts/state-cache.js?v=20221228" data-cacheable type="text/javascript"></script>
-  <script src="../scripts/window.js?v=20221228" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/global-shared.js?v=20221229" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/state-cache.js?v=20221229" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/window.js?v=20221229" data-cacheable type="text/javascript"></script>
 
-  <script src="../scripts/text-scroller.js?v=20221228" data-cacheable type="text/javascript"></script>
-  <script src="../scripts/text-scroller-menu.js?v=20221228" data-cacheable type="text/javascript"></script>
-  <script src="../scripts/text-scroller-settings.js?v=202212295" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/text-scroller.js?v=20221229" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/text-scroller-menu.js?v=20221229" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/text-scroller-settings.js?v=20221229" data-cacheable type="text/javascript"></script>
 
   <script src="../scripts/debug.js?v=20221229" data-cacheable type="text/javascript"></script>
 
-  <script src="../install/prompt.js?v=20221228" data-cacheable type="text/javascript" async></script>
-  <script src="../pwa-bootstrap.js?v=20221228" data-cacheable type="text/javascript" async></script>
+  <script src="../install/prompt.js?v=20221229" data-cacheable type="text/javascript" async></script>
+  <script src="../pwa-bootstrap.js?v=20221229" data-cacheable type="text/javascript" async></script>
 
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black">
   <link rel="manifest" href="manifest.json">
+
+  <!-- CAUTION: The following lines list other cacheable resources. Please DO NOT REMOVE. -->
+  <!--
+  <resource location="../markdown.html" data-cacheable></html>
+  <resource location="images/icon-64x64.png" data-cacheable></html>
+  <script src="../libs/marked-4.2.5.min.js" data-cacheable type="text/javascript"></script>
+
+  <resource location="LICENSE.md" data-cacheable></html>
+  <resource location="README.md" data-cacheable></html>
+  -->
 </head>
 
 <body>

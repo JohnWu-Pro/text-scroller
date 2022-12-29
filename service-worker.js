@@ -13,7 +13,7 @@ const APP_ID = 'text-scroller'
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, triggers the static-cachable-resources being refreshed.
 //
-const SW_VERSION = '0.9.5' // Should be kept in sync with APP_VERSION
+const SW_VERSION = '1.0-RC1' // Should be kept in sync with APP_VERSION
 
 const CONTEXT_PATH = (() => {
   // NOTE: location.href points to the location of this script
@@ -113,12 +113,6 @@ async function cacheStaticResources() {
     const resources = resolveStaticCachableResources(indexHtml)
     // console.debug("[DEBUG] Resolved static cachable resources: %o", resources)
 
-    // Remove versioned resources from cache
-    for(const resource of resources) {
-      if(isVersioned(resource)) await cache.delete(resource, {ignoreSearch : true})
-    }
-    // console.debug("[DEBUG] Remaining cached resources: %o", await cache.keys())
-
     return await cache.addAll(resources)
   } else {
     console.error("[ERROR] Failed in loading %s: %o", INDEX_HTML, response)
@@ -130,31 +124,20 @@ function isCacheable(response) {
   return 200 <= response?.status && response.status < 300 && response.headers.has('Content-Type')
 }
 
-function isVersioned(resource) {
-  return /\w+\?v=\w+/.test(resource)
-}
-
 function resolveStaticCachableResources(indexHtml) {
-  const styles = []
-  for (const [_, ...match] of indexHtml.matchAll(/<link[^<>]+href="([\/\-\.\w]+\.css\?v=\d+)" data-cacheable [^<>]+>/g)) {
-    styles.push(...match) // Append captured resource paths
-  }
-
-  const scripts = []
-  for (const [_, ...match] of indexHtml.matchAll(/<script[^<>]+src="([\/\-\.\w]+\.js\?v=\d+)" data-cacheable [^<>]+>/g)) {
-    scripts.push(...match) // Append captured resource paths
-  }
+  const resources = []
+  Array(
+    /<resource location="([\/\-\.\w]+(?:\?v=\w+)?)" data-cacheable>/g,
+    /<link[^<>]+href="([\/\-\.\w]+\.css(?:\?v=\w+)?)" data-cacheable [^<>]+>/g,
+    /<script[^<>]+src="([\/\-\.\w]+\.js(?:\?v=\w+)?)" data-cacheable [^<>]+>/g,
+  ).forEach((regexp) => {
+    for (const [_, ...match] of indexHtml.matchAll(regexp)) {
+      resources.push(...match) // Append captured resource paths
+    }
+  })
 
   return [ // Expects origin relative paths
-    CONTEXT_PATH + "/images/icon-144x144.png",
-    CONTEXT_PATH + "/images/icon-192x192.png",
-    CONTEXT_PATH + "/images/icon-512x512.png",
-    ...styles.map(path => CONTEXT_PATH + '/' + path),
-    ...scripts.map(path => CONTEXT_PATH + '/' + path),
-    CONTEXT_PATH + "/LICENSE.md",
-    CONTEXT_PATH + "/README.md",
-    CONTEXT_PATH + "/../markdown.html",
-    CONTEXT_PATH + "/../libs/marked-4.2.5.min.js",
+    ...resources.map(path => CONTEXT_PATH + '/' + path),
   ]
 }
 
