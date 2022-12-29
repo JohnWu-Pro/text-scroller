@@ -464,17 +464,18 @@ class Settings {
             reader.readAsDataURL(file)
           })
           $E('.image #paste-image-url', div).addEventListener('click', function() {
+          const $urlPrompt = $E('.image #image-url-prompt', div)
             navigator.clipboard.readText()
-              .then((text) => $E('.image #image-url-prompt', div).innerHTML = text)
+              .then((text) => $urlPrompt.innerHTML = text)
               .then((url) => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
               .then(async (response) => {
                 if(response.ok) {
-                  setBackgroundUrl(response.url)
-                  $E('.image #image-url-prompt', div).innerHTML += 
-                    `<br/> --> <span class="success">OK</span>`
+                  setBackgroundUrl($urlPrompt.innerHTML)
+                  $urlPrompt.innerHTML += 
+                    `<br/> --> <span class="success">${T('settings.image.succeeded')}</span>`
                 } else {
-                  $E('.image #image-url-prompt', div).innerHTML += 
-                    `<br/> --> <span class="error">ERROR: ${response.status}</span>`
+                  $urlPrompt.innerHTML += 
+                    `<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`
                 }
               })
           })

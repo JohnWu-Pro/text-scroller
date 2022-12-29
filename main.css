@@ -37,6 +37,13 @@ body {
 .scroller-background {
   width: 100vw;
   height: 100vh;
+}
+.scroller-background::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 100vmax;
+  height: 100vmin;
   background: var(--scroller-background);
 }
 
@@ -74,6 +81,11 @@ body {
     display: flex;
     align-items: center;
   }
+  .scroller-background::before {
+    top: 0;
+    left: 0;
+    transform: none;
+  }
 
   .scroller-container {
     overflow-x: hidden;
@@ -95,6 +107,11 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+  }
+  .scroller-background::before {
+    top: calc((100vmax - 100vmin) / 2);
+    left: calc((100vmin - 100vmax) / 2);
+    transform: rotate(90deg);
   }
 
   .scroller-content {
