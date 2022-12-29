@@ -320,13 +320,25 @@ div.input > input.visually-hidden {
   overflow: hidden;
   clip-path: circle(0);
 }
-div.label > label[for="bg-image"] {
+div.label > label[for="bg-image"],
+div.label > button#paste-image-url {
   border: 1px outset darkgray;
   border-radius: 1vmin;
   background-color: var(--button-color);
   color: var(--active-color);
   margin-left: 1vmin;
   padding: 1vmin 2vmin;
+}
+
+div.input > #image-url-prompt {
+  text-align: left;
+  word-break: break-all;
+}
+span.error {
+  color: red;
+}
+span.success {
+  color: green;
 }
 
 .settings-content.more {

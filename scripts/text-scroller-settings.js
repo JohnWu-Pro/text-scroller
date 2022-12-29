@@ -429,9 +429,11 @@ class Settings {
                 <input type="radio" id="use-image" name="use" value="image">
                 <label for="use-image">${T('settings.image')}:</label>
                 <label for="bg-image">${T('settings.image.select')}</label>
+                <button id="paste-image-url">${T('settings.image.paste')}</button>
               </div>
               <div class="input">
                 <input type="file" id="bg-image" accept="image/*" class="visually-hidden">
+                <div id="image-url-prompt"><div>
               </div>
             </div>
           `
@@ -449,15 +451,32 @@ class Settings {
             Settings.applyBackground(rootStyle)
           })
 
+          function setBackgroundUrl(url) {
+            settings.background.url = url
+            updateRadios(radios, (settings.background.use = 'image'))
+            Settings.applyBackground(rootStyle)
+          }
+
           $E('.image input[type="file"]', div).addEventListener('change', function() {
             const file = this.files[0]
             const reader = new FileReader()
-            reader.onload = (event) => {
-              settings.background.url = event.target.result
-              updateRadios(radios, (settings.background.use = 'image'))
-              Settings.applyBackground(rootStyle)
-            }
+            reader.onload = (event) => setBackgroundUrl(event.target.result)
             reader.readAsDataURL(file)
+          })
+          $E('.image button#paste-image-url', div).addEventListener('click', function() {
+            navigator.clipboard.readText()
+              .then((text) => $E('.image #image-url-prompt', div).innerHTML = text)
+              .then((url) => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
+              .then(async (response) => {
+                if(response.ok) {
+                  setBackgroundUrl(response.url)
+                  $E('.image #image-url-prompt', div).innerHTML += 
+                    `<br/> --> <span class="success">OK</span>`
+                } else {
+                  $E('.image #image-url-prompt', div).innerHTML += 
+                    `<br/> --> <span class="error">ERROR: ${response.status}</span>`
+                }
+              })
           })
         }
       },
@@ -494,7 +513,7 @@ class Settings {
             if(withSettings.checked) {
               const settings = PlainObject.copy(Settings.#instance)
               settings.activeTab = Settings.DEFAULT.activeTab
-              settings.background.url = '' // TODO: Support web image
+              if(/^data:image\/.+/.test(settings.background.url)) settings.background.url = ''
 
               url.searchParams.set('settings', Base64.UrlSafe.encode(LZString.compressToUint8Array(JSON.stringify(settings))))
             }
