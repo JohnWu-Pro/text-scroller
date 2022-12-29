@@ -10,10 +10,10 @@
 const APP_ID = 'text-scroller'
 
 //
-// NOTE: Update the APP_VERSION would trigger the Service Worker being updated, and
+// NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, triggers the static-cachable-resources being refreshed.
 //
-const APP_VERSION = '0.9.3-B4'
+const SW_VERSION = '0.9.3.92' // Should be kept in sync with APP_VERSION
 
 const CONTEXT_PATH = (() => {
   // NOTE: location.href points to the location of this script
@@ -21,14 +21,14 @@ const CONTEXT_PATH = (() => {
   const locale = new URLSearchParams(location.search).get('locale')
   return locale ? contextPath + '/' + locale : contextPath
 })()
-console.debug("[DEBUG] [ServiceWorker] CONTEXT_PATH: %s, location: %o", CONTEXT_PATH, location)
+// console.debug("[DEBUG] [ServiceWorker] CONTEXT_PATH: %s, location: %o", CONTEXT_PATH, location)
 
 const INDEX_HTML = `${CONTEXT_PATH}/index.html`
 
 const CACHE_NAME = 'cache.' + APP_ID + '.resources'
 
 self.addEventListener('install', function(event) {
-  console.info("[INFO] Calling ServiceWorker(%s).install(%s) ...", APP_VERSION, JSON.stringify(event))
+  console.info("[INFO] Calling ServiceWorker[%o].install(%s) ...", SW_VERSION, JSON.stringify(event))
 
   event.waitUntil(
     cacheStaticResources()
@@ -40,7 +40,7 @@ self.addEventListener('install', function(event) {
 })
 
 self.addEventListener('activate', function(event) {
-  // console.debug("[DEBUG] Calling ServiceWorker.activate(%o) ...", event)
+  console.info("[INFO] Calling ServiceWorker[%o].activate(%s) ...", SW_VERSION, JSON.stringify(event))
 
   event.waitUntil((async () => {
     // Enable navigation preload if it's supported.
@@ -51,6 +51,14 @@ self.addEventListener('activate', function(event) {
 
     // Tell the active service worker to take control of the page immediately.
     await self.clients.claim()
+
+    // Notify the window client that the Service Worker is activated
+    await self.clients.matchAll()
+      .then((windowClients) => {
+        for (const client of windowClients) {
+          client.postMessage({type: 'SW_ACTIVATED', version: SW_VERSION});
+        }
+      })
   })())
 })
 
@@ -65,7 +73,8 @@ self.addEventListener('fetch', function(event) {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME)
     const request = event.request
-    const preferFetch = navigator.onLine && new URL(request.url).pathname === INDEX_HTML
+    const url = new URL(request.url)
+    const preferFetch = navigator.onLine && url.pathname === INDEX_HTML
 
     // First, try to get the resource from the cache
     // console.debug("[DEBUG] Checking cache for %o ...", request)
@@ -84,7 +93,8 @@ self.addEventListener('fetch', function(event) {
 
     // Next, try to fetch the resource from the network
     // console.debug("[DEBUG] Trying to fetch and cache %o ...", request)
-    response = await fetch(new Request(request, {body: new URLSearchParams({v: APP_VERSION})}))
+    url.searchParams.set('swv', SW_VERSION)
+    response = await fetch(new Request(url.href, request))
     if(isCacheable(response)) {
       putIn(cache, request, response)
       return response
@@ -111,13 +121,12 @@ async function cacheStaticResources() {
     const resources = resolveStaticCachableResources(indexHtml)
     // console.debug("[DEBUG] Static cachable resources: %o", resources)
 
-    resources.forEach(async (resource) => await cache.delete(resource, {ignoreSearch : true}))
+    // Remove versioned resources from cache
+    for(const resource of resources) {
+      if(isVersioned(resource)) await cache.delete(resource, {ignoreSearch : true})
+    }
 
-    return await cache.addAll(resources.map((resource) => {
-      const url = new URL(location.origin + resource)
-      url.searchParams.set('by', 'sw-ins')
-      return url.pathname + url.search + url.hash
-    }))
+    return await cache.addAll(resources)
   } else {
     console.error("[ERROR] Failed in loading %s: %o", INDEX_HTML, response)
     throw "Failed in loading " + INDEX_HTML
@@ -126,6 +135,10 @@ async function cacheStaticResources() {
 
 function isCacheable(response) {
   return 200 <= response?.status && response.status < 300 && response.headers.has('Content-Type')
+}
+
+function isVersioned(resource) {
+  return /\w+\?v=\w+/.test(resource)
 }
 
 function resolveStaticCachableResources(indexHtml) {
@@ -147,7 +160,8 @@ function resolveStaticCachableResources(indexHtml) {
     ...scripts.map(path => CONTEXT_PATH + '/' + path),
     CONTEXT_PATH + "/LICENSE.md",
     CONTEXT_PATH + "/README.md",
-    CONTEXT_PATH + "/../markdown.html"
+    CONTEXT_PATH + "/../markdown.html",
+    CONTEXT_PATH + "/../libs/marked-4.2.5.min.js",
   ]
 }
 
