@@ -463,16 +463,27 @@ class Settings {
             reader.onload = (event) => setBackgroundUrl(event.target.result)
             reader.readAsDataURL(file)
           })
+          function truncate(string, maxLength) {
+            return string?.length < maxLength ? string : (string.substring(0, maxLength-3)+'...')
+          }
           $E('.image #paste-image-url', div).addEventListener('click', function() {
-          const $urlPrompt = $E('.image #image-url-prompt', div)
+            const $urlPrompt = $E('.image #image-url-prompt', div)
+            let url = ''
             navigator.clipboard.readText()
-              .then((text) => $urlPrompt.innerHTML = text)
-              .then((url) => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
-              .then(async (response) => {
+              .then((text) => url = text)
+              .then(() => $urlPrompt.innerHTML = truncate(url, 160))
+              .then(() => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
+              .then((response) => {
                 if(response.ok) {
-                  setBackgroundUrl($urlPrompt.innerHTML)
-                  $urlPrompt.innerHTML += 
-                    `<br/> --> <span class="success">${T('settings.image.succeeded')}</span>`
+                  const contentType = response.headers.get('Content-Type')
+                  if(contentType?.startsWith('image/')) {
+                    setBackgroundUrl($urlPrompt.innerHTML)
+                    $urlPrompt.innerHTML += 
+                      `<br/> --> <span class="success">${T('settings.image.succeeded')}</span>`
+                  } else {
+                    $urlPrompt.innerHTML += 
+                      `<br/> --> <span class="error">${T('settings.image.error.contentType')}: ${contentType}</span>`
+                  }
                 } else {
                   $urlPrompt.innerHTML += 
                     `<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`

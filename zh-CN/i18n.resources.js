@@ -27,6 +27,7 @@ values: {
   "settings.image.paste": "粘贴网址",
   "settings.image.succeeded": "成功！",
   "settings.image.error": "出错",
+  "settings.image.error.contentType": "非图片链接",
   "settings.glow.radius": "半径(无光晕 或 1到10)",
   "settings.glow.radius.zero": "无光晕",
   "settings.glow.use.customized": "定制",
