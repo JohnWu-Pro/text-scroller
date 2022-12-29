@@ -475,7 +475,7 @@ class Settings {
             </div>
             <div class="app">
               <a href="javascript:openMarkdown('${T('app.name')}', '${CONTEXT_PATH}/README.md')">${T('app.name')}</a>
-              <span>${T('app.version')} ${APP_VERSION}${window.SW_VERSION ? '('+window.SW_VERSION+')' : ''}</span>
+              <span>${T('app.version')} ${APP_VERSION}</span>
             </div>
             <div class="copyright">
               <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>

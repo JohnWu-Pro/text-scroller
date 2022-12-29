@@ -13,7 +13,7 @@ const APP_ID = 'text-scroller'
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, triggers the static-cachable-resources being refreshed.
 //
-const SW_VERSION = '0.9.3.92' // Should be kept in sync with APP_VERSION
+const SW_VERSION = '0.9.4' // Should be kept in sync with APP_VERSION
 
 const CONTEXT_PATH = (() => {
   // NOTE: location.href points to the location of this script
@@ -28,7 +28,7 @@ const INDEX_HTML = `${CONTEXT_PATH}/index.html`
 const CACHE_NAME = 'cache.' + APP_ID + '.resources'
 
 self.addEventListener('install', function(event) {
-  console.info("[INFO] Calling ServiceWorker[%o].install(%s) ...", SW_VERSION, JSON.stringify(event))
+  console.debug("[DEBUG] Calling ServiceWorker[%o].install(%s) ...", SW_VERSION, JSON.stringify(event))
 
   event.waitUntil(
     cacheStaticResources()
@@ -40,7 +40,7 @@ self.addEventListener('install', function(event) {
 })
 
 self.addEventListener('activate', function(event) {
-  console.info("[INFO] Calling ServiceWorker[%o].activate(%s) ...", SW_VERSION, JSON.stringify(event))
+  console.debug("[DEBUG] Calling ServiceWorker[%o].activate(%s) ...", SW_VERSION, JSON.stringify(event))
 
   event.waitUntil((async () => {
     // Enable navigation preload if it's supported.
@@ -51,14 +51,6 @@ self.addEventListener('activate', function(event) {
 
     // Tell the active service worker to take control of the page immediately.
     await self.clients.claim()
-
-    // Notify the window client that the Service Worker is activated
-    await self.clients.matchAll()
-      .then((windowClients) => {
-        for (const client of windowClients) {
-          client.postMessage({type: 'SW_ACTIVATED', version: SW_VERSION});
-        }
-      })
   })())
 })
 
@@ -119,12 +111,13 @@ async function cacheStaticResources() {
 
     const indexHtml = await response.clone().text()
     const resources = resolveStaticCachableResources(indexHtml)
-    // console.debug("[DEBUG] Static cachable resources: %o", resources)
+    // console.debug("[DEBUG] Resolved static cachable resources: %o", resources)
 
     // Remove versioned resources from cache
     for(const resource of resources) {
       if(isVersioned(resource)) await cache.delete(resource, {ignoreSearch : true})
     }
+    // console.debug("[DEBUG] Remaining cached resources: %o", await cache.keys())
 
     return await cache.addAll(resources)
   } else {
@@ -143,12 +136,12 @@ function isVersioned(resource) {
 
 function resolveStaticCachableResources(indexHtml) {
   const styles = []
-  for (const [_, ...match] of indexHtml.matchAll(/<link[^<>]+href="([\/\-\.\w]+\.css\?\d+)" data-cacheable [^<>]+>/g)) {
+  for (const [_, ...match] of indexHtml.matchAll(/<link[^<>]+href="([\/\-\.\w]+\.css\?v=\d+)" data-cacheable [^<>]+>/g)) {
     styles.push(...match) // Append captured resource paths
   }
 
   const scripts = []
-  for (const [_, ...match] of indexHtml.matchAll(/<script[^<>]+src="([\/\-\.\w]+\.js\?\d+)" data-cacheable [^<>]+>/g)) {
+  for (const [_, ...match] of indexHtml.matchAll(/<script[^<>]+src="([\/\-\.\w]+\.js\?v=\d+)" data-cacheable [^<>]+>/g)) {
     scripts.push(...match) // Append captured resource paths
   }
 
