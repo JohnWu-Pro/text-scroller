@@ -23,7 +23,7 @@ values: {
   "settings.color.green": "绿",
   "settings.color.blue": "蓝",
   "settings.image": "图片",
-  "settings.image.select": "从相册选取...",
+  "settings.image.select": "从相册选",
   "settings.image.paste": "粘贴网址",
   "settings.image.orientation": "朝向",
   "settings.glow.radius": "半径(无光晕 或 1到10)",
