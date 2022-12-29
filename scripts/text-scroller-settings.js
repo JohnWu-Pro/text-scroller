@@ -495,7 +495,8 @@ class Settings {
             </div>
             <div class="app">
               <a href="javascript:openMarkdown('${T('app.name')}', '${CONTEXT_PATH}/README.md')">${T('app.name')}</a>
-              <span>${T('app.version')} ${APP_VERSION}</span>
+              <span>${APP_VERSION}</span>
+              ${renderUpgrade()}
             </div>
             <div class="copyright">
               <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>
@@ -537,11 +538,17 @@ class Settings {
           Promise.resolve().then(renderQrcode)
 
           withSettings.addEventListener('change', renderQrcode)
+
+          function renderUpgrade() {
+            return !(newVersion > APP_VERSION) ? ''
+                : `<button id="upgrade">${T('app.upgrade')} ${newVersion}</button>`
+          }
+          $E('.app #upgrade')?.addEventListener('click', () => window.location.reload())
         }
       },
     }
 
-    var $overlay, $view, isVisible = false, $content
+    var $overlay, $view, isVisible = false, $content, newVersion = undefined
 
     function init() {
       $overlay = $E('div.overlay')
@@ -564,6 +571,11 @@ class Settings {
 
       window.addEventListener("show-settings", show)
       window.addEventListener("close-settings", close)
+
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        console.debug("[DEBUG] Received Service Worker message: %s", JSON.stringify(event.data))
+        if(event.data.type === 'SW_ACTIVATED') newVersion = event.data.version
+      })
 
       return Promise.resolve()
     }

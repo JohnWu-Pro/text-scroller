@@ -369,6 +369,15 @@ span.success {
   justify-content: center;
 }
 
+.app > #upgrade {
+  border: 1px outset darkgray;
+  border-radius: 1vmin;
+  background-color: var(--button-color);
+  color: var(--active-color);
+  padding: 0.5vmin 2vmin;
+  margin-bottom: 0.5vmin;
+}
+
 div.app,
 div.copyright {
   text-align: center;

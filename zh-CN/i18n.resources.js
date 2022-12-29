@@ -4,7 +4,7 @@
 
 values: {
   "app.name": "闪屏弹幕",
-  "app.version": "版本",
+  "app.upgrade": "刷新并升级到",
 
   "settings.default.text": "闪屏弹幕 演示文本",
   "settings.tab-label.text": "文本",
