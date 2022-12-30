@@ -13,7 +13,7 @@ const APP_ID = 'text-scroller'
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, triggers the static-cachable-resources being refreshed.
 //
-const SW_VERSION = '1.0-RC2' // Should be kept in sync with APP_VERSION
+const SW_VERSION = '1.0-RC3' // Should be kept in sync with APP_VERSION
 
 const CONTEXT_PATH = (() => {
   // NOTE: location.href points to the location of this script
