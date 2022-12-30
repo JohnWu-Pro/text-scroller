@@ -128,8 +128,24 @@ async function cacheStaticResources() {
     const indexHtml = await response.clone().text()
     const resources = resolveStaticCachableResources(indexHtml)
     // console.debug("[DEBUG] Resolved static cachable resources: %o", resources)
+    // console.debug("[DEBUG] Current cached resources: %o", await cache.keys())
 
-    return await cache.addAll(resources)
+    // Assuming all resources are properly versioned (if applicable) in either form of:
+    //   * /path/to/name.ext?v=<VERSION>
+    //   * /path/to/name-<VERSION>.ext
+    // Only cache new or updated resources
+    const newResources = []
+    for(const resource of resources) {
+      if(!(await cache.match(resource))) {
+        cache.delete(resource, {ignoreSearch : true})
+        newResources.push(resource)
+      } else {
+        // console.debug("[DEBUG] Resource had already been cached: (%s)", resource)
+      }
+    }
+    // console.debug("[DEBUG] To be cached new/updated resources: %o", newResources)
+
+    return await cache.addAll(newResources)
   } else {
     console.error("[ERROR] Failed in loading %s: %o", INDEX_HTML, response)
     throw "Failed in loading " + INDEX_HTML
@@ -141,19 +157,24 @@ function isCacheable(response) {
 }
 
 function resolveStaticCachableResources(indexHtml) {
-  const resources = []
-  Array(
-    /<cacheable-resource location="([\/\-\.\w]+(?:\?v=\w+)?)" ?\/>/g,
-    /<link[^<>]+href="([\/\-\.\w]+\.css(?:\?v=\w+)?)" data-cacheable [^<>]+>/g,
-    /<script[^<>]+src="([\/\-\.\w]+\.js(?:\?v=\w+)?)" data-cacheable [^<>]+>/g,
-  ).forEach((regexp) => {
-    for (const [_, ...match] of indexHtml.matchAll(regexp)) {
+  const resources = [];
+  [ /<cacheable-resource location="([\/\w\.\-]+(?:\?v=[\w\.\-]+)?)" ?\/>/g,
+    /<link[^<>]+href="([\/\w\.\-]+\.css(?:\?v=[\w\.\-]+)?)" data-cacheable [^<>]+>/g,
+    /<script[^<>]+src="([\/\w\.\-]+\.js(?:\?v=[\w\.\-]+)?)" data-cacheable [^<>]+>/g,
+  ].forEach((regex) => {
+    for (const [_, ...match] of indexHtml.matchAll(regex)) {
       resources.push(...match) // Append captured resource paths
     }
   })
 
   // Expects origin relative paths
-  return resources.map(path => CONTEXT_PATH + '/' + path)
+  const normalize = (path) => {
+    const names = [];
+    (CONTEXT_PATH + '/' + path).split('/').forEach(it => it === '..' ? names.pop() : names.push(it))
+    return names.join('/')
+  }
+
+  return resources.map(normalize)
 }
 
 function putIn(cache, request, response) {
