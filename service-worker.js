@@ -76,10 +76,9 @@ self.addEventListener('fetch', function(event) {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME)
     const request = event.request
-    const preferFetch = navigator.onLine && new URL(request.url).pathname === INDEX_HTML
 
     // First, try to get the resource from the cache
-    let response = preferFetch ? null : await cache.match(request)
+    let response = await cache.match(request)
     if(response) {
       // console.debug("[DEBUG] Returning response from cache for %o ...", request)
       return response
@@ -107,18 +106,9 @@ self.addEventListener('fetch', function(event) {
     //   .catch(error => console.error("[ERROR] Error occurred while trying to fetch %o: %o", request, error))
     if(isCacheable(response)) {
       putIn(cache, request, response)
-      // console.debug("[DEBUG] Returning fetched response for %o ...", request)
-      return response
     }
 
-    if(preferFetch) {
-      // Fallback to cache, for the prefer-fetch resources
-      // console.debug("[DEBUG] Trying to return response from cache for %o ...", request)
-      return await cache.match(request)
-    }
-
-    // Return fetched non-cacheable response anyway
-    // console.debug("[DEBUG] Returning fetched non-cacheable response for %o ...", request)
+    // console.debug("[DEBUG] Returning fetched response for %o ...", request)
     return response
   })())
 })
