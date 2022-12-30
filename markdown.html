@@ -3,13 +3,23 @@
 <head>
   <meta charset="utf-8">
 
+  <!-- <link href="favicon.png" rel="shortcut icon" type="image/png" sizes="32x32"> -->
+
   <script src="libs/marked-4.2.5.min.js" data-cacheable type="text/javascript"></script>
   <script>
+    document.head.appendChild(Object.assign(document.createElement('link'), {
+      href: opener.window.document.querySelector('link[rel="shortcut icon"]').href ?? 'en/favicon.png',
+      rel: 'shortcut icon',
+      type: 'image/png',
+      sizes: '32x32',
+    }))
+
     function params() {
-      const params = new URLSearchParams(location.search)
+      const params = opener?.window.crossTabParams?.[location.origin + location.pathname] ?? {}
+      // console.debug("[DEBUG] Params: %s", JSON.stringify(params))
 
       const uri = ((uri) => {
-        uri = uri ? decodeURIComponent(uri) : 'README.md'
+        uri = uri || 'README.md'
         if(RegExp('^https?://\\w+.+$').test(uri)) { // absolute HTTP URI
           return uri
         } else if(uri.startsWith('/')) { // origin relative URI
@@ -17,16 +27,14 @@
         } else { // page relative URI
           return location.href.substring(0, location.href.lastIndexOf('/')) + '/' + uri
         }
-      })(params.get('md'))
+      })(params.uri)
 
-      const title = ((title, uri) => {
-        if(title) return decodeURIComponent(title)
-
+      const title = params.title || ((uri) => {
         const left = uri.lastIndexOf('/')
         let right = uri.lastIndexOf('.', left+1)
         if(right === -1) right = uri.length
         return uri.substring(left+1, right)
-      })(params.get('title'), uri)
+      })(uri)
 
       return {title, uri}
     }
