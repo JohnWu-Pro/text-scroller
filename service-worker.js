@@ -11,16 +11,16 @@ const APP_ID = 'text-scroller'
 
 //
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
-// consequently, triggers the static-cachable-resources being refreshed.
+// consequently, refresh the static-cachable-resources
 //
-const SW_VERSION = '1.0-RC3' // Should be kept in sync with APP_VERSION
+const SW_VERSION = '1.0-RC3' // Should be kept in sync with the APP_VERSION
 
-const CONTEXT_PATH = (() => {
+const CONTEXT_PATH = ((location) => {
   // NOTE: location.href points to the location of this script
   const contextPath = location.pathname.substring(0, location.pathname.lastIndexOf('/'))
   const locale = new URLSearchParams(location.search).get('locale')
   return locale ? contextPath + '/' + locale : contextPath
-})()
+})(location)
 // console.debug("[DEBUG] [ServiceWorker] CONTEXT_PATH: %s, location: %o", CONTEXT_PATH, location)
 
 const INDEX_HTML = `${CONTEXT_PATH}/index.html`
@@ -53,7 +53,7 @@ self.addEventListener('activate', function(event) {
     await self.clients.claim()
 
     await self.clients.matchAll().then((windowClients) => {
-      for (const client of windowClients) {
+      for(const client of windowClients) {
         client.postMessage({type: 'SW_ACTIVATED', version: SW_VERSION});
       }
     })
@@ -64,46 +64,56 @@ self.addEventListener('fetch', function(event) {
   // console.debug("[DEBUG] Calling ServiceWorker.fetch(%o) ...", event.request)
 
   if(event.request.method !== 'GET') {
-    // For non-GET requests, let the browser do its default thing
+    // For non-GET requests, let the browser perform its default behaviour
     return
   }
 
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME)
     const request = event.request
-    const url = new URL(request.url)
-    const preferFetch = navigator.onLine && url.pathname === INDEX_HTML
+    const preferFetch = navigator.onLine && new URL(request.url).pathname === INDEX_HTML
 
     // First, try to get the resource from the cache
-    // console.debug("[DEBUG] Checking cache for %o ...", request)
     let response = preferFetch ? null : await cache.match(request)
     if(response) {
+      // console.debug("[DEBUG] Returning response from cache for %o ...", request)
       return response
     }
 
     // Next, try to use the preloaded response, if available
-    // console.debug("[DEBUG] Checking preloaded response for %o ...", request)
     response = await event.preloadResponse
     if(isCacheable(response)) {
       putIn(cache, request, response)
+      // console.debug("[DEBUG] Returning preload-response for %o ...", request)
       return response
     }
 
     // Next, try to fetch the resource from the network
-    // console.debug("[DEBUG] Trying to fetch and cache %o ...", request)
-    url.searchParams.set('swv', SW_VERSION)
-    response = await fetch(new Request(url.href, request))
+    response = await fetch(request)
+    // response = await fetch(((request) => {
+    //   const url = new URL(request.url)
+    //   url.searchParams.set('swv', SW_VERSION)
+    //   const {method, headers, body, mode, credentials, cache, redirect, referrer, referrerPolicy, integrity} = request
+    //   const options = {method, headers, body, mode, credentials, cache, redirect, referrer, referrerPolicy, integrity}
+    //   if(options.mode === 'navigate') options.mode = 'same-origin'
+    //   console.debug("[DEBUG] Fetch options: %o", options)
+    //   return new Request(url.href, options)
+    // })(request))
+    //   .catch(error => console.error("[ERROR] Error occurred while trying to fetch %o: %o", request, error))
     if(isCacheable(response)) {
       putIn(cache, request, response)
+      // console.debug("[DEBUG] Returning fetched response for %o ...", request)
       return response
     }
 
     if(preferFetch) {
-      // Fallback to cache
+      // Fallback to cache, for the prefer-fetch resources
+      // console.debug("[DEBUG] Trying to return response from cache for %o ...", request)
       return await cache.match(request)
     }
 
-    // Return fetched response anyway
+    // Return fetched non-cacheable response anyway
+    // console.debug("[DEBUG] Returning fetched non-cacheable response for %o ...", request)
     return response
   })())
 })
@@ -127,7 +137,7 @@ async function cacheStaticResources() {
 }
 
 function isCacheable(response) {
-  return 200 <= response?.status && response.status < 300 && response.headers.has('Content-Type')
+  return 200 <= response?.status && response.status <= 205 && response.headers.has('Content-Type')
 }
 
 function resolveStaticCachableResources(indexHtml) {
