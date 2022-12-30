@@ -472,7 +472,8 @@ class Settings {
           }
           $E('.image #paste-image-url', div).addEventListener('click', function() {
             let url = ''
-            navigator.clipboard.readText()
+            navigator.clipboard.readText
+            ? navigator.clipboard.readText()
               .then((text) => url = text)
               .then(() => $prompt.innerHTML = truncate(url, 160))
               .then(() => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
@@ -492,6 +493,7 @@ class Settings {
                     `<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`
                 }
               })
+            : $prompt.innerHTML = "Operation not supported in this browser." // TODO
           })
         }
       },
