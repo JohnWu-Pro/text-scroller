@@ -239,7 +239,7 @@ class Settings {
       }
 
       onChanged(handler) {
-        Array('red', 'green', 'blue').forEach((name) => {
+        ['red', 'green', 'blue'].forEach((name) => {
           const color = {
             range: $E(`.color input[type="range"].${name}`, this.#div),
             label: $E(`span[name="${name}"]`, this.#div),
@@ -257,7 +257,7 @@ class Settings {
       }
 
       refresh() {
-        Array('red', 'green', 'blue').forEach((name) => {
+        ['red', 'green', 'blue'].forEach((name) => {
           $E(`.color input[type="range"].${name}`, this.#div).value = this.#color[name]
           $E(`span[name="${name}"]`, this.#div).innerHTML = this.#color[name]
         })
