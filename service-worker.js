@@ -152,9 +152,8 @@ function resolveStaticCachableResources(indexHtml) {
     }
   })
 
-  return [ // Expects origin relative paths
-    ...resources.map(path => CONTEXT_PATH + '/' + path),
-  ]
+  // Expects origin relative paths
+  return resources.map(path => CONTEXT_PATH + '/' + path)
 }
 
 function putIn(cache, request, response) {
