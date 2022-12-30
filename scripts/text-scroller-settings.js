@@ -588,8 +588,8 @@ class Settings {
       window.addEventListener("show-settings", show)
       window.addEventListener("close-settings", close)
 
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        console.debug("[DEBUG] Received Service Worker message: %s", JSON.stringify(event.data))
+      navigator.serviceWorker?.addEventListener('message', (event) => {
+        // console.debug("[DEBUG] Received Service Worker message: %s", JSON.stringify(event.data))
         if(event.data.type === 'SW_ACTIVATED') activatedVersion = event.data.version
       })
 
