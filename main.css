@@ -347,7 +347,7 @@ div.label > #paste-image-url {
   padding: 1vmin 2vmin;
 }
 
-div.input > #image-url-prompt {
+div.input > #image-prompt {
   text-align: left;
   word-break: break-all;
 }

@@ -28,6 +28,7 @@ values: {
   "settings.image.succeeded": "成功！",
   "settings.image.error": "出错",
   "settings.image.error.contentType": "非图片链接",
+  "settings.image.local.size-gt-1000k": "注: 本浏览器仅支持尺寸小于1000K的 相册图片 作为背景。",
   "settings.glow.radius": "半径(无光晕 或 1到10)",
   "settings.glow.radius.zero": "无光晕",
   "settings.glow.use.customized": "定制",

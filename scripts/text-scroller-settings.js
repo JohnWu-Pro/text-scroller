@@ -433,7 +433,7 @@ class Settings {
               </div>
               <div class="input">
                 <input type="file" id="bg-image" accept="image/*" class="visually-hidden">
-                <div id="image-url-prompt"><div>
+                <div id="image-prompt"><div>
               </div>
             </div>
           `
@@ -457,6 +457,10 @@ class Settings {
             Settings.applyBackground(rootStyle)
           }
 
+          const $prompt = $E('.image #image-prompt', div)
+          if(/Firefox/.test(navigator.userAgent)) {
+            $prompt.innerHTML = T('settings.image.local.size-gt-1000k')
+          }
           $E('.image input[type="file"]', div).addEventListener('change', function() {
             const file = this.files[0]
             const reader = new FileReader()
@@ -467,25 +471,24 @@ class Settings {
             return string?.length < maxLength ? string : (string.substring(0, maxLength-3)+'...')
           }
           $E('.image #paste-image-url', div).addEventListener('click', function() {
-            const $urlPrompt = $E('.image #image-url-prompt', div)
             let url = ''
             navigator.clipboard.readText()
               .then((text) => url = text)
-              .then(() => $urlPrompt.innerHTML = truncate(url, 160))
+              .then(() => $prompt.innerHTML = truncate(url, 160))
               .then(() => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
               .then((response) => {
                 if(response.ok) {
                   const contentType = response.headers.get('Content-Type')
                   if(contentType?.startsWith('image/')) {
-                    setBackgroundUrl($urlPrompt.innerHTML)
-                    $urlPrompt.innerHTML += 
+                    setBackgroundUrl(url)
+                    $prompt.innerHTML += 
                       `<br/> --> <span class="success">${T('settings.image.succeeded')}</span>`
                   } else {
-                    $urlPrompt.innerHTML += 
+                    $prompt.innerHTML += 
                       `<br/> --> <span class="error">${T('settings.image.error.contentType')}: ${contentType}</span>`
                   }
                 } else {
-                  $urlPrompt.innerHTML += 
+                  $prompt.innerHTML += 
                     `<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`
                 }
               })
@@ -551,15 +554,15 @@ class Settings {
           withSettings.addEventListener('change', renderQrcode)
 
           function renderUpgrade() {
-            return !(newVersion > APP_VERSION) ? ''
-                : `<button id="upgrade">${T('app.upgrade')} ${newVersion}</button>`
+            return !(activatedVersion > APP_VERSION) ? ''
+                : `<button id="upgrade">${T('app.upgrade')} ${activatedVersion}</button>`
           }
           $E('.app #upgrade')?.addEventListener('click', () => window.location.reload())
         }
       },
     }
 
-    var $overlay, $view, isVisible = false, $content, newVersion = undefined
+    var $overlay, $view, isVisible = false, $content, activatedVersion
 
     function init() {
       $overlay = $E('div.overlay')
@@ -585,7 +588,7 @@ class Settings {
 
       navigator.serviceWorker.addEventListener('message', (event) => {
         console.debug("[DEBUG] Received Service Worker message: %s", JSON.stringify(event.data))
-        if(event.data.type === 'SW_ACTIVATED') newVersion = event.data.version
+        if(event.data.type === 'SW_ACTIVATED') activatedVersion = event.data.version
       })
 
       return Promise.resolve()
