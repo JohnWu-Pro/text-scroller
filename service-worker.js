@@ -13,7 +13,7 @@ const APP_ID = 'text-scroller'
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, refresh the static-cachable-resources
 //
-const SW_VERSION = '1.0-RC3' // Should be kept in sync with the APP_VERSION
+const SW_VERSION = '1.0-RC4' // Should be kept in sync with the APP_VERSION
 
 const CONTEXT_PATH = ((location) => {
   // NOTE: location.href points to the location of this script
@@ -28,7 +28,7 @@ const INDEX_HTML = `${CONTEXT_PATH}/index.html`
 const CACHE_NAME = 'cache.' + APP_ID + '.resources'
 
 self.addEventListener('install', function(event) {
-  console.debug("[DEBUG] Calling ServiceWorker[%o].install(%s) ...", SW_VERSION, JSON.stringify(event))
+  console.info("[INFO] Installing ServiceWorker (version: %s) ...", SW_VERSION)
 
   event.waitUntil(
     cacheStaticResources()
@@ -40,8 +40,6 @@ self.addEventListener('install', function(event) {
 })
 
 self.addEventListener('activate', function(event) {
-  console.debug("[DEBUG] Calling ServiceWorker[%o].activate(%s) ...", SW_VERSION, JSON.stringify(event))
-
   event.waitUntil((async () => {
     // Enable navigation preload if it's supported.
     // See https://developers.google.com/web/updates/2017/02/navigation-preload
@@ -57,6 +55,8 @@ self.addEventListener('activate', function(event) {
         client.postMessage({type: 'SW_ACTIVATED', version: SW_VERSION});
       }
     })
+
+    console.info("[INFO] Activated ServiceWorker (version: %s).", SW_VERSION)
   })())
 })
 
@@ -143,7 +143,7 @@ function isCacheable(response) {
 function resolveStaticCachableResources(indexHtml) {
   const resources = []
   Array(
-    /<resource location="([\/\-\.\w]+(?:\?v=\w+)?)" data-cacheable>/g,
+    /<cacheable-resource location="([\/\-\.\w]+(?:\?v=\w+)?)" ?\/>/g,
     /<link[^<>]+href="([\/\-\.\w]+\.css(?:\?v=\w+)?)" data-cacheable [^<>]+>/g,
     /<script[^<>]+src="([\/\-\.\w]+\.js(?:\?v=\w+)?)" data-cacheable [^<>]+>/g,
   ).forEach((regexp) => {
