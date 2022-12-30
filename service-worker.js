@@ -1,9 +1,14 @@
 'use strict';
 
 //
-// CAUTION:
-// This script should be placed in the directory where the `index.html` resides, or its parent directory,
-// so that the script location resolution can work as expected.
+// NOTE:
+// 1. This script should be placed in the directory where the `index.html` resides, or its parent directory,
+//    so that the script location resolution can work as expected.
+// 2. Resources are supposed to be properly versioned (if applicable) in either form of:
+//    * /path/to/name.ext?v=<VERSION>
+//    * /path/to/name-<VERSION>.ext
+// 3. Only NEW (by path-name and version) and UPDATED (by version) resources will be refreshed
+//    while a new version of service worker is installed.
 //
 (() => {
 
@@ -13,7 +18,7 @@ const APP_ID = 'text-scroller'
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, refresh the static-cachable-resources
 //
-const SW_VERSION = '1.0.0' // Should be kept in sync with the APP_VERSION
+const SW_VERSION = '1.0.1' // Should be kept in sync with the APP_VERSION
 
 const CONTEXT_PATH = ((location) => {
   // NOTE: location.href points to the location of this script
