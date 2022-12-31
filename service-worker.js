@@ -17,7 +17,7 @@
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, refresh the static-cachable-resources
 //
-const SW_VERSION = '1.0.1' // Should be kept in sync with the APP_VERSION
+const SW_VERSION = '1.0.2' // Should be kept in sync with the APP_VERSION
 
 const APP_ID = 'text-scroller'
 
