@@ -5,20 +5,21 @@
 // 1. This script should be placed in the directory where the `index.html` resides, or its parent directory,
 //    so that the script location resolution can work as expected.
 // 2. Resources are supposed to be properly versioned (if applicable) in either form of:
-//    * /path/to/name.ext?v=<VERSION>
-//    * /path/to/name-<VERSION>.ext
-// 3. Only NEW (by path-name and version) and UPDATED (by version) resources will be refreshed
-//    while a new version of service worker is installed.
+//    2.1. URI-versioned:  /path/to/name.ext?v=<VERSION>
+//    2.2. File-versioned: /path/to/name-<VERSION>.ext
+// 3. While a new version of service worker is installed, the following resources will be refreshed:
+//    3.1. All URI-versioned resources, and
+//    3.2. Newly added file-versioned resources.
 //
 (() => {
-
-const APP_ID = 'text-scroller'
 
 //
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, refresh the static-cachable-resources
 //
 const SW_VERSION = '1.0.1' // Should be kept in sync with the APP_VERSION
+
+const APP_ID = 'text-scroller'
 
 const CONTEXT_PATH = ((location) => {
   // NOTE: location.href points to the location of this script
@@ -125,13 +126,11 @@ async function cacheStaticResources() {
     // console.debug("[DEBUG] Resolved static cachable resources: %o", resources)
     // console.debug("[DEBUG] Current cached resources: %o", await cache.keys())
 
-    // Assuming all resources are properly versioned (if applicable) in either form of:
-    //   * /path/to/name.ext?v=<VERSION>
-    //   * /path/to/name-<VERSION>.ext
-    // Only cache new or updated resources
+    // Cache all URI-versioned and newly added file-versioned resources
     const newResources = []
+    const uriVersioned = /^.+\?v=[\w\.\-]+$/
     for(const resource of resources) {
-      if(!(await cache.match(resource))) {
+      if(uriVersioned.test(resource) || !(await cache.match(resource))) {
         cache.delete(resource, {ignoreSearch : true})
         newResources.push(resource)
       } else {
