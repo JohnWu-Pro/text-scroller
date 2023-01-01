@@ -270,7 +270,9 @@ class Settings {
 
     const TABS = {
       text: {
+        div: undefined,
         renderWithin(div) {
+          this.div = div
           const settings = Settings.#instance
           div.innerHTML = `
             <div>
@@ -285,6 +287,12 @@ class Settings {
             TextScroller.start()
             Settings.View.close()
           })
+          this.onRendered()
+        },
+        onRendered() {
+          const input = $E('textarea', this.div)
+          input.focus()
+          input.select()
         }
       },
       foreground: {
@@ -619,6 +627,10 @@ class Settings {
       $show($overlay)
       return slider().slideIn()
         .then(() => isVisible = true)
+        .then(() => {
+          const renderer = TABS[Settings.#instance.activeTab]
+          if(renderer.onRendered) renderer.onRendered()
+        })
     }
 
     function close() {
