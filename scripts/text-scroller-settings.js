@@ -292,7 +292,8 @@ class Settings {
         onRendered() {
           const input = $E('textarea', this.div)
           input.focus()
-          input.select()
+          const length = input.value?.length
+          input.setSelectionRange(length, length)
         }
       },
       foreground: {
@@ -324,7 +325,7 @@ class Settings {
             </div>
             <div class="color">
               <div class="label">
-                <span>${T('settings.tab-label.foreground')}${T('settings.color')}:</span>
+                <span>${T('settings.foreground.color')}:</span>
                 ${colorPanel.lables()}
               </div>
               <div class="input">
@@ -367,7 +368,7 @@ class Settings {
             </div>
             <div class="color">
               <div class="label">
-                <span>${T('settings.tab-label.glow')}${T('settings.color')}:</span>
+                <span>${T('settings.glow.color')}:</span>
                 <input type="radio" id="use-foreground" name="use" value="foreground">
                 <label for="use-foreground">${T('settings.glow.use.foreground')}</label>
                 <input type="radio" id="use-customized" name="use" value="customized">
@@ -427,7 +428,7 @@ class Settings {
             <div class="color">
               <div class="label">
                 <input type="radio" id="use-color" name="use" value="color">
-                <label for="use-color">${T('settings.tab-label.background')}${T('settings.color')}:</label>` + colorPanel.lables() + `
+                <label for="use-color">${T('settings.background.color')}:</label>` + colorPanel.lables() + `
               </div>
               <div class="input">` + colorPanel.inputs() + `
               </div>
@@ -511,7 +512,7 @@ class Settings {
             <div class="share">
               <div class="label">
                 <span>${T('settings.share')}:</span>
-                <input type="checkbox" checked id="with-settings" name="with-settings"><label for="with-settings">${T('settings.share.with-settings')}</label>
+                <input type="checkbox" checked id="including-settings" name="including-settings"><label for="including-settings">${T('settings.share.including-settings')}</label>
               </div>
               <div class="input">
                 <div class="qrcode"></div>
@@ -529,14 +530,14 @@ class Settings {
               <a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
             </div>
           `
-          const withSettings = $E('.share input[type="checkbox"]', div)
+          const includingSettings = $E('.share input[name="including-settings"]', div)
           const container = $E('div.qrcode', div)
 
           function renderQrcode() {
             const url = new URL(location.href)
             url.search = ''
             url.searchParams.set('v', new Date().toISOString().replace(/^(\d{4})-(\d{2})-(\d{2}).{10}(\d{3}).+$/, '$1$2$3$4'))
-            if(withSettings.checked) {
+            if(includingSettings.checked) {
               const settings = PlainObject.copy(Settings.#instance)
               settings.activeTab = Settings.DEFAULT.activeTab
               if(/^data:image\/.+/.test(settings.background.url)) settings.background.url = ''
@@ -561,7 +562,7 @@ class Settings {
           }
           Promise.resolve().then(renderQrcode)
 
-          withSettings.addEventListener('change', renderQrcode)
+          includingSettings.addEventListener('change', renderQrcode)
 
           function renderUpgrade() {
             return !(activatedVersion > APP_VERSION) ? ''
@@ -576,7 +577,7 @@ class Settings {
 
     function init() {
       $overlay = $E('div.overlay')
-      $view = appendElement('div', {className: 'settings-view hidden'}, $overlay)
+      $view = appendElement('div', {className: `settings-view ${LOCALE} hidden`}, $overlay)
       $view.innerHTML = `
         <div class="settings-content"></div>
         <div class="settings-tabs">` +

@@ -415,9 +415,21 @@ a, a:hover, a:visited {
     flex-direction: column;
   }
 
-  .tab-label {
+  .en .settings-tab {
+    height: 13.2vmin;
+  }
+
+  .en .tab-label {
+    margin: auto;
+    padding-left: 2vmin;
     text-orientation: mixed;
+    transform: rotate(-180deg);
+    writing-mode: vertical-rl;
+  }
+
+  .zh-CN .tab-label {
     padding: 2vmin 0;
+    text-orientation: mixed;
   }
 }
 @media (orientation: portrait) {
@@ -441,7 +453,12 @@ a, a:hover, a:visited {
     flex-direction: row;
   }
 
+  .en .settings-tab {
+    width: 16vmin;
+  }
+
   .tab-label {
+    margin: auto;
     padding: 0 4vmin;
   }
 }

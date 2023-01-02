@@ -18,7 +18,9 @@ values: {
   "settings.size": "字体大小(8到64)",
   "settings.speed": "滚动速度(静止 或 1到100)",
   "settings.speed.zero": "静止",
-  "settings.color": "颜色",
+  "settings.foreground.color": "前景颜色",
+  "settings.glow.color": "光晕颜色",
+  "settings.background.color": "背景颜色",
   "settings.color.red": "红",
   "settings.color.green": "绿",
   "settings.color.blue": "蓝",
@@ -37,7 +39,7 @@ values: {
   "settings.glow.duration.zero": "不闪",
 
   "settings.share": "分享",
-  "settings.share.with-settings": "包含我的设定",
+  "settings.share.including-settings": "包含我的设定",
 
   "install.add-to-home-screen": "添加到桌面",
   "install.demo.acknowledge": "已了解!",
