@@ -34,6 +34,10 @@ body {
   display: none !important;
 }
 
+.no-wrap {
+  white-space: nowrap;
+}
+
 .scroller-background {
   width: 100vw;
   height: 100vh;
@@ -167,7 +171,6 @@ body {
   border-radius: 1vmin;
 }
 .settings-view > .settings-content {
-  flex-basis: 80%;
   background-color: var(--overlay-background);
   opacity: var(--overlay-opacity);
 
@@ -180,7 +183,6 @@ body {
   color: var(--label-color);
 }
 .settings-view > .settings-tabs {
-  flex-basis: 18%;
   background-color: var(--overlay-background);
   opacity: var(--overlay-opacity);
 
@@ -306,9 +308,6 @@ body {
 .settings-content div.label span.hint {
   color: var(--hint-color);
 }
-div.input span.color-line {
-  white-space: nowrap;
-}
 div.input span.color-name {
   background-color: white;
   border: none;
@@ -343,6 +342,7 @@ div.label > #paste-image-url {
   border-radius: 1vmin;
   background-color: var(--button-color);
   color: var(--active-color);
+  font-size: small;
   margin-left: 1vmin;
   padding: 1vmin 2vmin;
 }
@@ -361,7 +361,6 @@ span.success {
 .settings-content.more {
   opacity: 1;
   justify-content: space-around;
-  white-space: nowrap;
 }
 .settings-content.more .share div.input {
   display: flex;
@@ -374,7 +373,7 @@ span.success {
   border-radius: 1vmin;
   background-color: var(--button-color);
   color: var(--active-color);
-  padding: 0.5vmin 2vmin;
+  padding: 0.5vmin 1vmin;
   margin-bottom: 0.5vmin;
 }
 
@@ -396,8 +395,8 @@ a, a:hover, a:visited {
 
 @media (orientation: landscape) {
   .overlay {
-    left: calc(100dvw - 100vmin); top: 0;
-    width: 100vmin; height: 100vmin;
+    left: calc(100dvw - 120vmin); top: 0;
+    width: 120vmin; height: 100vmin;
   }
   .overlay.slide-in {
     transform: translateX(-100%);
@@ -410,8 +409,12 @@ a, a:hover, a:visited {
   .settings-tab {
     flex-direction: row;
   }
+  .settings-content {
+    flex-basis: 83.2%;
+  }
 
   .settings-tabs {
+    flex-basis: 15%;
     flex-direction: column;
   }
 
@@ -449,16 +452,20 @@ a, a:hover, a:visited {
     flex-direction: column;
   }
 
+  .settings-content {
+    flex-basis: 80%;
+  }
+
   .settings-tabs {
+    flex-basis: 18%;
     flex-direction: row;
   }
 
-  .en .settings-tab {
+  .settings-tab {
     width: 16vmin;
   }
 
   .tab-label {
     margin: auto;
-    padding: 0 4vmin;
   }
 }

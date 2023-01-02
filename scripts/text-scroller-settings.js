@@ -233,9 +233,9 @@ class Settings {
 
       inputs() {
         return `
-          <span class="color-line"><span class="color-name red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${this.#color.red}"></span>
-          <span class="color-line"><span class="color-name green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${this.#color.green}"></span>
-          <span class="color-line"><span class="color-name blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${this.#color.blue}"></span>`
+          <span class="no-wrap"><span class="color-name red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${this.#color.red}"></span>
+          <span class="no-wrap"><span class="color-name green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${this.#color.green}"></span>
+          <span class="no-wrap"><span class="color-name blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${this.#color.blue}"></span>`
       }
 
       onChanged(handler) {
@@ -518,16 +518,15 @@ class Settings {
                 <div class="qrcode"></div>
               </div>
             </div>
-            <div class="app">
+            <div class="app no-wrap">
               <a href="javascript:openMarkdown('${T('app.name')}', '${CONTEXT_PATH}/README.md')">${T('app.name')}</a>
               <span>${APP_VERSION}</span>
               ${renderUpgrade()}
             </div>
             <div class="copyright">
-              <a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')}&copy; 2022</a>
-              <a href="mailto: johnwu.pro@gmail.com" target="_blank">${T('footer.owner')}</a>,
-              ${T('footer.licensed-under')}
-              <a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.
+              <span class="no-wrap"><a href="javascript:openMarkdown('${T('footer.license')}', '${CONTEXT_PATH}/LICENSE.md')">${T('footer.copyright')} &copy; 2022-${(new Date().getFullYear())}</a></span>
+              <span class="no-wrap"><a href="mailto: johnwu.pro@gmail.com" target="_blank">${T('footer.owner')}</a>,</span>
+              <span class="no-wrap">${T('footer.licensed-under')} <a href="https://mozilla.org/MPL/2.0/" target="_blank">MPL-2.0</a>.</span>
             </div>
           `
           const includingSettings = $E('.share input[name="including-settings"]', div)
