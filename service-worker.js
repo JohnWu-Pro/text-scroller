@@ -19,7 +19,7 @@
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, refresh the static-cachable-resources
 //
-const SW_VERSION = '1.1-RC2' // Should be kept in sync with the APP_VERSION
+const SW_VERSION = '1.1.0' // Should be kept in sync with the APP_VERSION
 
 const APP_ID = 'text-scroller'
 
@@ -139,7 +139,7 @@ async function cacheStaticResources() {
         // console.debug("[DEBUG] Resource had already been cached: (%s)", resource)
       }
     }
-    console.debug("[DEBUG] To be refreshed resources: %o", toBeRefreshed)
+    // console.debug("[DEBUG] To be refreshed resources: %o", toBeRefreshed)
 
     return await cache.addAll(toBeRefreshed)
   } else {
