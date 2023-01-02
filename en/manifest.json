@@ -1,0 +1,38 @@
+{
+  "name": "Text Scroller",
+  "short_name": "Text Scroller",
+  "description": "An installable online full screen scrolling text message board.",
+  "categories": ["tools", "text", "display"],
+  "id": "/text-scroller/en/index.html",
+  "start_url": "/text-scroller/en/index.html?mode=fullscreen",
+  "scope": "/text-scroller/",
+  "related_applications": [{
+    "platform": "webapp",
+    "url": "https://ejfun.natapp4.cc/text-scroller/en/manifest.json"
+  },{
+    "platform": "webapp",
+    "url": "https://johnwu-pro.github.io/text-scroller/en/manifest.json"
+  }],
+  "display": "fullscreen",
+  "background_color": "#f8f8ff",
+  "theme_color": "#f8fff8",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "images/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    },{
+      "src": "images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },{
+      "src": "images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

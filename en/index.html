@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Text Scroller</title>
+  <meta name="author" content="Juhua (John) Wu">
+  <meta name="description" content="An installable online full screen scrolling text message board">
+  <meta name="keywords" content="full screen, scrolling, blinking, text message board">
+
+  <link href="favicon.png" rel="shortcut icon" type="image/png" sizes="32x32">
+
+  <link href="../main.css?v=20221230" data-cacheable rel=stylesheet type="text/css">
+  <script>document.querySelector(':root').style.setProperty('--default-font-family', 'Times New Roman')</script>
+
+  <script src="../libs/base64-1.0.0.js" data-cacheable type="text/javascript"></script>
+  <script src="../libs/easy.qrcode-4.4.13.min.js" data-cacheable type="text/javascript"></script>
+  <script src="../libs/i18n.min.js" data-cacheable type="text/javascript"></script><!-- http://i18njs.com/ -->
+  <script src="../libs/lz-string-1.4.4.min.js" data-cacheable type="text/javascript"></script>
+
+  <script src="i18n.resources.js?v=20221230" data-cacheable type="text/javascript"></script>
+
+  <script src="../scripts/app.js?v=20221230" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/config.js?v=20221230" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/global-shared.js?v=20221230" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/state-cache.js?v=20221230" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/window.js?v=20221230" data-cacheable type="text/javascript"></script>
+
+  <script src="../scripts/text-scroller.js?v=20221230" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/text-scroller-menu.js?v=20221230" data-cacheable type="text/javascript"></script>
+  <script src="../scripts/text-scroller-settings.js?v=20221230" data-cacheable type="text/javascript"></script>
+
+  <script src="../scripts/debug.js?v=20221230" data-cacheable type="text/javascript"></script>
+
+  <script src="../install/prompt.js?v=20221230" data-cacheable type="text/javascript" async></script>
+  <script src="../pwa-bootstrap.js?v=20221230" data-cacheable type="text/javascript" async></script>
+
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- 
+   | CAUTION: PLEASE DO NOT REMOVE.
+   |
+   | The following lines list other cacheable resources,
+   | which will be used to refresh the resources while installing a new version of the service worker.
+   |-->
+  <!--
+  <cacheable-resource location="../markdown.html" />
+  <cacheable-resource location="images/icon-64x64.png" />
+  <script src="../libs/marked-4.2.5.min.js" data-cacheable type="text/javascript"></script>
+
+  <cacheable-resource location="LICENSE.md" />
+  <cacheable-resource location="README.md" />
+  -->
+</head>
+
+<body>
+
+</body>
+
+</html>
