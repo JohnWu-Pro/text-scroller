@@ -4,7 +4,7 @@
 
 values: {
   "app.name": "Text Scroller",
-  "app.upgrade": "Reload and upgrade to",
+  "app.upgrade": "Upgrade to",
 
   "settings.default.text": "Text Scroller - Demo Message",
   "settings.tab-label.text": "Text",
@@ -30,7 +30,7 @@ values: {
   "settings.image.succeeded": "Succeeded!",
   "settings.image.error": "ERROR",
   "settings.image.error.contentType": "Not an image link",
-  "settings.image.local.size-gt-1000k": "NOTE: This browser only allows galary image that's less than 1000KB to be used as background.",
+  "settings.image.local.size-gt-1000k": "NOTE: This browser only allows small sized gallery image (<=1MB) to be used as the background.",
   "settings.glow.radius": "Radius (OFF or 1..10)",
   "settings.glow.radius.zero": "OFF",
   "settings.glow.use.customized": "Customized",
@@ -45,7 +45,7 @@ values: {
   "install.demo.acknowledge": "Got it!",
 
   "footer.copyright": "Copyright",
-  "footer.owner": "Juhua (John) Wu",
+  "footer.owner": "John Wu",
   "footer.license": "License",
   "footer.licensed-under": "Licensed under",
 }

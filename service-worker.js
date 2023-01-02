@@ -4,12 +4,14 @@
 // NOTE:
 // 1. This script should be placed in the directory where the `index.html` resides, or its parent directory,
 //    so that the script location resolution can work as expected.
-// 2. Resources are supposed to be properly versioned (if applicable) in either form of:
-//    2.1. URI-versioned:  /path/to/name.ext?v=<VERSION>
-//    2.2. File-versioned: /path/to/name-<VERSION>.ext
+// 2. Resources are supposed to be properly versioned (if applicable) in one of the following forms:
+//    2.1. File-versioned:    /path/to/name-<VERSION>.ext
+//    2.2. URI-versioned:     /path/to/name.ext?v=<VERSION>
+//    2.3. Pseudo-versioned:  /path/to/name.ext?v=pseudo
 // 3. While a new version of service worker is installed, the following resources will be refreshed:
-//    3.1. All URI-versioned resources, and
-//    3.2. Newly added file-versioned resources.
+//    3.1. Newly added file-versioned resources (keyed by /path/to/name-<VERSION>.ext), and
+//    3.2. All URI-versioned resources (keyed by /path/to/name.ext?v=<VERSION>), and
+//    3.3. All Pseudo-versioned resources (keyed by /path/to/name.ext).
 //
 (() => {
 
@@ -17,7 +19,7 @@
 // NOTE: Update the SW_VERSION would trigger the Service Worker being updated, and
 // consequently, refresh the static-cachable-resources
 //
-const SW_VERSION = '1.1-RC1' // Should be kept in sync with the APP_VERSION
+const SW_VERSION = '1.1-RC2' // Should be kept in sync with the APP_VERSION
 
 const APP_ID = 'text-scroller'
 
@@ -127,19 +129,19 @@ async function cacheStaticResources() {
     // console.debug("[DEBUG] Current cached resources: %o", await cache.keys())
 
     // Cache all URI-versioned and newly added file-versioned resources
-    const newResources = []
+    const toBeRefreshed = []
     const uriVersioned = /^.+\?v=[\w\.\-]+$/
     for(const resource of resources) {
       if(uriVersioned.test(resource) || !(await cache.match(resource))) {
         cache.delete(resource, {ignoreSearch : true})
-        newResources.push(resource)
+        toBeRefreshed.push(resource.replaceAll('?v=pseudo', ''))
       } else {
         // console.debug("[DEBUG] Resource had already been cached: (%s)", resource)
       }
     }
-    // console.debug("[DEBUG] To be cached new/updated resources: %o", newResources)
+    console.debug("[DEBUG] To be refreshed resources: %o", toBeRefreshed)
 
-    return await cache.addAll(newResources)
+    return await cache.addAll(toBeRefreshed)
   } else {
     console.error("[ERROR] Failed in loading %s: %o", INDEX_HTML, response)
     throw "Failed in loading " + INDEX_HTML
