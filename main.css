@@ -2,6 +2,7 @@
   border: none;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 :root {
@@ -59,7 +60,6 @@ body {
   text-overflow: clip;
   white-space: nowrap;
   position: relative;
-  user-select: none;
 }
 .scroller-content.shadow-animation {
   animation: flicker var(--animation-duration) infinite alternate;
