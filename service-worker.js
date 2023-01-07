@@ -8,10 +8,12 @@
 //    2.1. File-versioned:    /path/to/name-<VERSION>.ext
 //    2.2. URI-versioned:     /path/to/name.ext?v=<VERSION>
 //    2.3. Pseudo-versioned:  /path/to/name.ext?v=pseudo
-// 3. While a new version of service worker is installed, the following resources will be refreshed:
+//    2.4. Deleted:           /path/to/name.ext?v=deleted
+// 3. While a new version of service worker is installed, the following resources will be refreshed/deleted:
 //    3.1. Newly added file-versioned resources (keyed by /path/to/name-<VERSION>.ext), and
 //    3.2. All URI-versioned resources (keyed by /path/to/name.ext?v=<VERSION>), and
-//    3.3. All Pseudo-versioned resources (keyed by /path/to/name.ext).
+//    3.3. All Pseudo-versioned resources (keyed by /path/to/name.ext), and
+//    3.4. All Deleted resources will be removed from the cache.
 //
 (() => {
 
@@ -31,7 +33,7 @@ const CONTEXT_PATH = ((location) => {
 })(location)
 // console.debug("[DEBUG] [ServiceWorker] CONTEXT_PATH: %s, location: %o", CONTEXT_PATH, location)
 
-const INDEX_HTML = `${CONTEXT_PATH}/index.html`
+const INDEX_HTML = CONTEXT_PATH + '/index.html'
 
 const CACHE_NAME = 'cache.' + APP_ID + '.resources'
 
@@ -130,9 +132,12 @@ async function cacheStaticResources() {
 
     // Cache all URI-versioned and newly added file-versioned resources
     const toBeRefreshed = []
+    const deleted = /^.+\?v=deleted$/
     const uriVersioned = /^.+\?v=[\w\.\-]+$/
     for(const resource of resources) {
-      if(uriVersioned.test(resource) || !(await cache.match(resource))) {
+      if(deleted.test(resource)) {
+        cache.delete(resource, {ignoreSearch : true})
+      } else if(uriVersioned.test(resource) || !(await cache.match(resource))) {
         cache.delete(resource, {ignoreSearch : true})
         toBeRefreshed.push(resource.replaceAll('?v=pseudo', ''))
       } else {
