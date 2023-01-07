@@ -49,10 +49,7 @@ function $stateful(element, init) {
     perform(transition, reverse = false) {
       return new Promise((resolve) => {
         delay(1).then(() => {
-          element.addEventListener('transitionend', () => {
-            // element.classList.toggle(transition, reverse)
-            resolve(element)
-          }, {once: true})
+          element.addEventListener('transitionend', () => resolve(element), {once: true})
           element.classList.toggle(transition, !reverse)
         })
       })
