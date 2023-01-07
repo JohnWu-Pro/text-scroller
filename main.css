@@ -136,7 +136,7 @@ body {
   opacity: 0;
   transition: opacity 600ms ease-in-out;;
 }
-.menu-overlay.show {
+.menu-overlay.fade-in {
   opacity: 1;
 }
 .menu {

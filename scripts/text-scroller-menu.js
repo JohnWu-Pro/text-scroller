@@ -16,14 +16,14 @@ window.Menu = window.Menu ?? (() => {
   }
 
   function show() {
-    $stateful($overlay, () => $show($overlay)).perform('show')
+    $stateful($overlay, () => $show($overlay)).perform('fade-in')
 
     return Promise.resolve()
   }
 
   function onClicked() {
     // console.debug("[DEBUG] Calling Menu.onClicked() ...")
-    $stateful($overlay).revert('show').then(() => {
+    $stateful($overlay).revert('fade-in').then(() => {
       $hide($overlay)
       window.dispatchEvent(new CustomEvent('menu-clicked'))
     })
