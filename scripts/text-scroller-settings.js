@@ -625,7 +625,7 @@ class Settings {
 
       $show($view)
       $show($overlay)
-      return slider().slideIn()
+      return $stateful($overlay).perform('slide-in')
         .then(() => isVisible = true)
         .then(() => {
           const renderer = TABS[Settings.#instance.activeTab]
@@ -638,7 +638,7 @@ class Settings {
 
       Settings.save()
 
-      return slider().slideOut()
+      return $stateful($overlay).revert('slide-in')
         .then(() => {
           isVisible = false
           $hide($overlay)
@@ -649,39 +649,6 @@ class Settings {
 
           window.dispatchEvent(new CustomEvent('settings-closed'))
         })
-    }
-
-    const AbstractSlider = {
-        slideIn() {
-          this.initSlidingIn()
-          return $on($overlay).perform('slide-in').then(() => this.onSlidedIn())
-        },
-        slideOut: () => $on($overlay).perform('slide-out')
-    }
-    const sliders = {
-      landscape: {...AbstractSlider,
-        initSlidingIn: () => $overlay.style.left = '100dvw',
-        onSlidedIn: () => $overlay.style.left = ''
-      },
-      portrait: {...AbstractSlider,
-        initSlidingIn: () => $overlay.style.top = '100dvh',
-        onSlidedIn: () => $overlay.style.top = ''
-      }
-    }
-
-    function slider() {
-      // console.debug("[DEBUG] screen.orientation.type: %s", screen.orientation.type)
-      switch (screen.orientation.type) {
-        case "landscape-primary":
-        case "landscape-secondary": // the screen is upside down!
-          return sliders.landscape
-        case "portrait-primary":
-        case "portrait-secondary":
-          return sliders.portrait
-        default:
-          console.warn("The orientation API isn't supported in this browser :(")
-          return sliders.landscape
-      }
     }
 
     return {

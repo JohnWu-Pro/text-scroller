@@ -26,6 +26,7 @@
 }
 
 body {
+  overflow: hidden;
   position: static;
   z-index: 0;
 }
@@ -156,9 +157,7 @@ body {
 
   --overlay-background: rgb(32, 32, 32);
   --overlay-opacity: 0.8;
-}
-.overlay.slide-in,
-.overlay.slide-out {
+
   transition: transform 800ms ease-in-out;
 }
 
@@ -342,7 +341,7 @@ div.label > #paste-image-url {
   border-radius: 1vmin;
   background-color: var(--button-color);
   color: var(--active-color);
-  font-size: small;
+  font-size: normal;
   margin-left: 1vmin;
   padding: 1vmin 2vmin;
 }
@@ -395,14 +394,11 @@ a, a:hover, a:visited {
 
 @media (orientation: landscape) {
   .overlay {
-    left: calc(100dvw - 120vmin); top: 0;
+    left: 100dvw; top: 0;
     width: 120vmin; height: 100vmin;
   }
   .overlay.slide-in {
     transform: translateX(-100%);
-  }
-  .overlay.slide-out {
-    transform: translateX(100%);
   }
 
   .settings-view,
@@ -437,14 +433,11 @@ a, a:hover, a:visited {
 }
 @media (orientation: portrait) {
   .overlay {
-    left: 0; top: calc(100dvh - 100vmin);
+    left: 0; top: 100dvh;
     width: 100vmin; height: 100vmin;
   }
   .overlay.slide-in {
     transform: translateY(-100%);
-  }
-  .overlay.slide-out {
-    transform: translateY(100%);
   }
 
   .settings-view,
