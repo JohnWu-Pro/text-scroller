@@ -464,8 +464,12 @@ class Settings {
 
           function onPasteBackgroundUrl(url) {
             $prompt.innerHTML = truncate(url, 160)
-            return fetch(url, {method: 'GET', mode: 'cors', cache: 'default'})
+            return fetch(url, {method: 'GET', mode: 'cors', cache: 'default', credentials: 'omit'})
               .then((response) => {
+                // console.debug("[DEBUG] Response: %o", response)
+                // for(const pair of response.headers) {
+                //   console.debug("[DEBUG] %s: %s", pair[0], pair[1])
+                // }
                 if(response.ok) {
                   const contentType = response.headers.get('Content-Type')
                   if(contentType?.startsWith('image/')) {
@@ -473,15 +477,18 @@ class Settings {
                     $prompt.innerHTML += 
                       `<br/> --> <span class="success">${T('settings.image.succeeded')}</span>`
                   } else {
-                    $prompt.innerHTML += 
+                    console.error("[ERROR] Unexpected Content-Type: %s", contentType)
+                    $prompt.innerHTML +=
                       `<br/> --> <span class="error">${T('settings.image.error.contentType')}: ${contentType}</span>`
                   }
                 } else {
-                  $prompt.innerHTML += 
+                  console.error("[ERROR] Unexpected Response Status: %d", response.status)
+                  $prompt.innerHTML +=
                     `<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`
                 }
               }).catch((error) => {
-                $prompt.innerHTML += 
+                console.error("[ERROR] Unexpected Error: %o", error)
+                $prompt.innerHTML +=
                   `<br/> --> <span class="error">${T('settings.image.error')}: ${error}</span>`
               })
           }
