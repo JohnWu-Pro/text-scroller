@@ -38,7 +38,7 @@ window.App = window.App ?? (() => {
   }
 
   function onDeactivate() {
-    window.dispatchEvent(new CustomEvent('close-settings'))
+    Settings.save()
   }
 
   function loadSettings() {
