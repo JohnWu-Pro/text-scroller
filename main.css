@@ -347,9 +347,24 @@ div.label > #paste-image-url {
 }
 
 div.input > #image-prompt {
+  margin-top: 2vmin;
   text-align: left;
   word-break: break-all;
 }
+div.input > #image-prompt + textarea {
+  color: var(--label-color);
+  background: transparent;
+  outline: none;
+  width: 100%;
+  resize: none;
+}
+div.input > #image-prompt + textarea::placeholder {
+  color: red;
+  font-size: large;
+  font-weight: bold;
+  opacity: 1;
+}
+
 span.error {
   color: red;
 }

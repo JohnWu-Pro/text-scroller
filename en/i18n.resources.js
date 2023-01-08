@@ -27,6 +27,7 @@ values: {
   "settings.image": "Image",
   "settings.image.select": "From Gallery",
   "settings.image.paste": "Paste URL",
+  "settings.image.paste.prompt": "Long-tap here then select &quot;Paste&quot; ...",
   "settings.image.succeeded": "Succeeded!",
   "settings.image.error": "ERROR",
   "settings.image.error.contentType": "Not an image link",

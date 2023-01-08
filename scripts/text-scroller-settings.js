@@ -424,6 +424,7 @@ class Settings {
         renderWithin(div) {
           const settings = Settings.#instance
           const colorPanel = new ColorPanel(div, settings.background.color)
+          const canReadClipboard = !!navigator.clipboard?.readText 
           div.innerHTML = `
             <div class="color">
               <div class="label">
@@ -442,7 +443,8 @@ class Settings {
               </div>
               <div class="input">
                 <input type="file" id="bg-image" accept="image/*" class="visually-hidden">
-                <div id="image-prompt"><div>
+                <div id="image-prompt"></div>` + (canReadClipboard ? '' :
+                  `<textarea class="hidden" readonly placeholder="${T('settings.image.paste.prompt')}" rows="6"></textarea>`) + `
               </div>
             </div>
           `
@@ -460,32 +462,9 @@ class Settings {
             Settings.applyBackground(rootStyle)
           })
 
-          function setBackgroundUrl(url) {
-            settings.background.url = url
-            updateRadios(radios, (settings.background.use = 'image'))
-            Settings.applyBackground(rootStyle)
-          }
-
-          const $prompt = $E('.image #image-prompt', div)
-          if(/Firefox/.test(navigator.userAgent)) {
-            $prompt.innerHTML = T('settings.image.local.size-gt-1000k')
-          }
-          $E('.image input[type="file"]', div).addEventListener('change', function() {
-            const file = this.files[0]
-            const reader = new FileReader()
-            reader.onload = (event) => setBackgroundUrl(event.target.result)
-            reader.readAsDataURL(file)
-          })
-          function truncate(string, maxLength) {
-            return string?.length < maxLength ? string : (string.substring(0, maxLength-3)+'...')
-          }
-          $E('.image #paste-image-url', div).addEventListener('click', function() {
-            let url = ''
-            navigator.clipboard.readText
-            ? navigator.clipboard.readText()
-              .then((text) => url = text)
-              .then(() => $prompt.innerHTML = truncate(url, 160))
-              .then(() => fetch(url, {method: 'GET', mode: 'cors', cache: 'default'}))
+          function onPasteBackgroundUrl(url) {
+            $prompt.innerHTML = truncate(url, 160)
+            return fetch(url, {method: 'GET', mode: 'cors', cache: 'default'})
               .then((response) => {
                 if(response.ok) {
                   const contentType = response.headers.get('Content-Type')
@@ -501,9 +480,56 @@ class Settings {
                   $prompt.innerHTML += 
                     `<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`
                 }
+              }).catch((error) => {
+                $prompt.innerHTML += 
+                  `<br/> --> <span class="error">${T('settings.image.error')}: ${error}</span>`
               })
-            : $prompt.innerHTML = "Operation not supported in this browser." // TODO
+          }
+          
+          function setBackgroundUrl(url) {
+            settings.background.url = url
+            updateRadios(radios, (settings.background.use = 'image'))
+            Settings.applyBackground(rootStyle)
+          }
+
+          const $prompt = $E('.image #image-prompt', div)
+          $E('.image input[type="file"]', div).addEventListener('change', function() {
+            $prompt.innerHTML = ''
+            const file = this.files[0]
+            const reader = new FileReader()
+            reader.onload = (event) => {
+              // console.debug("Calling FileReader.onload(%o) ...", event)
+              if(event.total > 1000*1024 && /Firefox/.test(navigator.userAgent)) {
+                $prompt.innerHTML = T('settings.image.local.size-gt-1000k')
+              } else {
+                setBackgroundUrl(event.target.result)
+              }
+            }
+            reader.readAsDataURL(file)
           })
+          function truncate(string, maxLength) {
+            return string?.length < maxLength ? string : (string.substring(0, maxLength-3)+'...')
+          }
+
+          if(canReadClipboard) {
+            $E('.image #paste-image-url', div).addEventListener('click', function() {
+              navigator.clipboard.readText().then(onPasteBackgroundUrl)
+            })
+          } else {
+            const input = $prompt.nextSibling
+            $E('.image #paste-image-url', div).addEventListener('click', function() {
+              $prompt.innerHTML = ''
+              input.value = ''
+              $show(input)
+              input.focus()
+            })
+            input.addEventListener('paste', function(event) {
+              const text = (event || window).clipboardData.getData('text')
+              // console.debug("Calling TextArea.onPaste(%s) ...", text)
+              onPasteBackgroundUrl(text)
+              $hide(this)
+            })
+          }
         }
       },
       more: {
