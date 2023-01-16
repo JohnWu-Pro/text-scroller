@@ -328,6 +328,18 @@ div.input span input {
   vertical-align: bottom;
 }
 
+.color input[is="labelled-switch"] {
+  outline: none;
+  border: 1px solid white;
+  background-color: rgba(32, 32, 32, 0.8);
+  color: rgba(255, 255, 255, 0.5);
+}
+.color input[is="labelled-switch"]::selection {
+  background-color: rgba(255, 255, 255, 0.4);
+  color: rgb(255, 255, 255);
+}
+
+
 div.input > input.visually-hidden {
   position: absolute !important;
   height: 1px;
@@ -341,7 +353,7 @@ div.label > #paste-image-url {
   border-radius: 1vmin;
   background-color: var(--button-color);
   color: var(--active-color);
-  font-size: normal;
+  font-size: medium;
   margin-left: 1vmin;
   padding: 1vmin 2vmin;
 }

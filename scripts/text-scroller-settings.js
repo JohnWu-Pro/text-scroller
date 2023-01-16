@@ -369,10 +369,10 @@ class Settings {
             <div class="color">
               <div class="label">
                 <span>${T('settings.glow.color')}:</span>
-                <input type="radio" id="use-foreground" name="use" value="foreground">
-                <label for="use-foreground">${T('settings.glow.use.foreground')}</label>
-                <input type="radio" id="use-customized" name="use" value="customized">
-                <label for="use-customized">${T('settings.glow.use.customized')}</label>
+                <input is="labelled-switch" name="use"
+                    on-value="foreground" on-label="${T('settings.glow.use.foreground')}"
+                    off-value="customized" off-label="${T('settings.glow.use.customized')}"
+                    value="${settings.glow.use}">
                 <br/>
                 <span>&nbsp;&nbsp;&nbsp;</span>${colorPanel.lables()}
               </div>
@@ -406,15 +406,11 @@ class Settings {
           }
           updateColorRanges()
 
-          const radios = $A('.color input[type="radio"]', div)
-          updateRadios(radios, settings.glow.use)
-          radios.forEach((radio) => {
-            radio.addEventListener('change', function(event) {
-              radios.forEach((it) => { if(it.checked) settings.glow.use = it.value })
-              colorPanel.refresh()
-              updateColorRanges()
-              Settings.applyGlowEffect(rootStyle)
-            })
+          $E('.color input[name="use"]', div).addEventListener('change', function() {
+            settings.glow.use = this.value
+            colorPanel.refresh()
+            updateColorRanges()
+            Settings.applyGlowEffect(rootStyle)
           })
 
           colorPanel.onChanged(() => Settings.applyGlowEffect(rootStyle))
