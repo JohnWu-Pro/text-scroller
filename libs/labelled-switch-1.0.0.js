@@ -128,11 +128,13 @@ span {
   background-color: ${style['selected-background-color']};
   border: none;
   top: 1px;
-  transition: all .3s cubic-bezier(.5,.1,.75,1.35), border-radius 0s;
+  transition: 
+    left .3s cubic-bezier(.5,.1,.75,1.35),
+    width .3s cubic-bezier(.5,.1,.75,1.35);
 }
 .label {
   color: ${style['default-color']};
-  transition: color .2s cubic-bezier(.5,.1,.75,1.35);
+  transition: color .3s cubic-bezier(.5,.1,.75,1.35);
 }
 .label.selected {
   color: ${style['selected-color']};
@@ -151,14 +153,14 @@ span#button {
 }
 span#button:not(.checked) {
   width: ${size.offWidth + size.padWidth * 2 - 2}px;
-  transform: translateX(${size.onWidth + size.padWidth * 1.5}px);
+  left: ${size.onWidth + size.padWidth * 1.5 + 1}px;
 }` : /* else, un-checked */ `
   left: ${size.onWidth + size.padWidth * 1.5 + 1}px;
   width: ${size.offWidth + size.padWidth * 2 - 2}px;
 }
 span#button.checked {
   width: ${size.onWidth + size.padWidth * 2 - 2}px;
-  transform: translateX(-${size.onWidth + size.padWidth * 1.5}px);
+  left: 1px;
 }`) + `
 span.container > .edge-pad {
   width: ${size.padWidth}px;
