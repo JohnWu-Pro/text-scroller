@@ -2,7 +2,7 @@
 
 const APP_ID = 'text-scroller'
 
-const APP_VERSION = '1.2.0'
+const APP_VERSION = '1.2.1'
 
 window.App = window.App ?? (() => {
 
