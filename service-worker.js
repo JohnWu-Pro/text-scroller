@@ -99,16 +99,6 @@ self.addEventListener('fetch', function(event) {
 
     // Next, try to fetch the resource from the network
     response = await fetch(request)
-    // response = await fetch(((request) => {
-    //   const url = new URL(request.url)
-    //   url.searchParams.set('swv', SW_VERSION)
-    //   const {method, headers, body, mode, credentials, cache, redirect, referrer, referrerPolicy, integrity} = request
-    //   const options = {method, headers, body, mode, credentials, cache, redirect, referrer, referrerPolicy, integrity}
-    //   if(options.mode === 'navigate') options.mode = 'same-origin'
-    //   console.debug("[DEBUG] Fetch options: %o", options)
-    //   return new Request(url.href, options)
-    // })(request))
-    //   .catch(error => console.error("[ERROR] Error occurred while trying to fetch %o: %o", request, error))
     if(isCacheable(response)) {
       putIn(cache, request, response)
     }
