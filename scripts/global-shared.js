@@ -37,29 +37,29 @@ function resolveNavigatorLocale() {
 
 const PlainObject = {
   /**
-  * Check if the value is a plain object
-  *
-  * @param value the value to be checked
-  * @returns true if the value is a plain object, false otherwise
-  */
+   * Check if the value is a plain object
+   *
+   * @param value the value to be checked
+   * @returns true if the value is a plain object, false otherwise
+   */
   is(value) { return value?.constructor === Object },
 
   /**
-  * Deep copy the source plain object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied.
-  *
-  * @param source the source object
-  * @returns a new plain object if the source is a plain object; otherwise, the source itself
-  */
+   * Deep copy the source plain object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied.
+   *
+   * @param source the source object
+   * @returns a new plain object if the source is a plain object; otherwise, the source itself
+   */
   copy(source) { return this.merge(source) },
 
   /**
-  * Deep merge the source plain object to the target object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied to the target.
-  *
-  * @param source the source object
-  * @param target the target object
-  * @returns the source object itself if it's a non-plain object; 
-  *          otherwise, the target object with its properties graph/hierarchy being overriden from the source object's properties graph/hierarchy.
-  */
+   * Deep merge the source plain object to the target object, any non-plain object reference in the source object's properties graph/hierarchy will be simply copied to the target.
+   *
+   * @param source the source object
+   * @param target the target object
+   * @returns the source object itself if it's a non-plain object; 
+   *          otherwise, the target object with its properties graph/hierarchy being overriden from the source object's properties graph/hierarchy.
+   */
   merge(source, target = {}) {
     if(!this.is(source)) return source
 
