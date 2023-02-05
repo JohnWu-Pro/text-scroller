@@ -7,7 +7,7 @@ window.TextScroller = window.TextScroller ?? (() => {
   function init() {
     const div = appendElement('div', {className: 'scroller-background'})
     div.addEventListener('click', () => window.dispatchEvent(new CustomEvent('scroller-touched')))
-    div.innerHTML = `
+    div.innerHTML = /*html*/`
       <div class="scroller-container"></div>
     `
 

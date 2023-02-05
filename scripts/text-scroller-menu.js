@@ -6,7 +6,7 @@ window.Menu = window.Menu ?? (() => {
 
   function init() {
     $overlay = appendElement('div', {className: 'menu-overlay hidden'})
-    $overlay.innerHTML = `<div class="menu"></div>`
+    $overlay.innerHTML = /*html*/`<div class="menu"></div>`
 
     $E('.menu', $overlay).addEventListener('click', onClicked)
 

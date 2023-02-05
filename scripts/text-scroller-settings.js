@@ -190,11 +190,11 @@ class Settings {
       }
 
       label() {
-        return `<span name="${this.#property}" class="hint">${this.#labelOf(this.#object[this.#property])}</span>`
+        return /*html*/`<span name="${this.#property}" class="hint">${this.#labelOf(this.#object[this.#property])}</span>`
       }
 
       input(min, step, max) {
-        return `<input type="range" min="${min}" step="${step}" max="${max}" value="${this.#rangeOf(this.#object[this.#property])}">`
+        return /*html*/`<input type="range" min="${min}" step="${step}" max="${max}" value="${this.#rangeOf(this.#object[this.#property])}">`
       }
 
       onChanged(handler) {
@@ -225,14 +225,14 @@ class Settings {
       }
 
       lables() {
-        return `
+        return /*html*/`
           <span>${T('settings.color.red')}</span><span name="red" class="hint">${this.#color.red}</span>
           <span>${T('settings.color.green')}</span><span name="green" class="hint">${this.#color.green}</span>
           <span>${T('settings.color.blue')}</span><span name="blue" class="hint">${this.#color.blue}</span>`
       }
 
       inputs() {
-        return `
+        return /*html*/`
           <span class="no-wrap"><span class="color-name red">${T('settings.color.red')}</span><input class="red" type="range" min="0" step="4" max="256" value="${this.#color.red}"></span>
           <span class="no-wrap"><span class="color-name green">${T('settings.color.green')}</span><input class="green" type="range" min="0" step="4" max="256" value="${this.#color.green}"></span>
           <span class="no-wrap"><span class="color-name blue">${T('settings.color.blue')}</span><input class="blue" type="range" min="0" step="4" max="256" value="${this.#color.blue}"></span>`
@@ -274,7 +274,7 @@ class Settings {
         renderWithin(div) {
           this.div = div
           const settings = Settings.#instance
-          div.innerHTML = `
+          div.innerHTML = /*html*/`
             <div>
               <textarea rows="5" wrap="soft" placeholder="${T('settings.text.placeholder')}">${settings.text}</textarea>
             </div>
@@ -304,7 +304,7 @@ class Settings {
           const speed = new RangeInput(div, settings, 'speed', Settings.#Speed)
 
           const colorPanel = new ColorPanel(div, settings.foreground.color)
-          div.innerHTML = `
+          div.innerHTML = /*html*/`
             <div class="size">
               <div class="label">
                 <span>${T('settings.size')}:</span>
@@ -356,7 +356,7 @@ class Settings {
           }
           const colorPanel = new ColorPanel(div, delegated)
 
-          div.innerHTML = `
+          div.innerHTML = /*html*/`
             <div class="radius">
               <div class="label">
                 <span>${T('settings.glow.radius')}:</span>
@@ -421,13 +421,13 @@ class Settings {
           const settings = Settings.#instance
           const colorPanel = new ColorPanel(div, settings.background.color)
           const canReadClipboard = !!navigator.clipboard?.readText 
-          div.innerHTML = `
+          div.innerHTML = /*html*/`
             <div class="color">
               <div class="label">
                 <input type="radio" id="use-color" name="use" value="color">
-                <label for="use-color">${T('settings.background.color')}:</label>` + colorPanel.lables() + `
+                <label for="use-color">${T('settings.background.color')}:</label>` + colorPanel.lables() + /*html*/`
               </div>
-              <div class="input">` + colorPanel.inputs() + `
+              <div class="input">` + colorPanel.inputs() + /*html*/`
               </div>
             </div>
             <div class="image">
@@ -439,8 +439,8 @@ class Settings {
               </div>
               <div class="input">
                 <input type="file" id="bg-image" accept="image/*" class="visually-hidden">
-                <div id="image-prompt"></div>` + (canReadClipboard ? '' :
-                  `<textarea class="hidden" readonly placeholder="${T('settings.image.paste.prompt')}" rows="6"></textarea>`) + `
+                <div id="image-prompt"></div>` + (canReadClipboard ? '' : /*html*/`
+                <textarea class="hidden" readonly placeholder="${T('settings.image.paste.prompt')}" rows="6"></textarea>`) + /*html*/`
               </div>
             </div>
           `
@@ -471,21 +471,21 @@ class Settings {
                   if(contentType?.startsWith('image/')) {
                     setBackgroundUrl(url)
                     $prompt.innerHTML += 
-                      `<br/> --> <span class="success">${T('settings.image.succeeded')}</span>`
+                      /*html*/`<br/> --> <span class="success">${T('settings.image.succeeded')}</span>`
                   } else {
                     console.error("[ERROR] Unexpected Content-Type: %s", contentType)
                     $prompt.innerHTML +=
-                      `<br/> --> <span class="error">${T('settings.image.error.contentType')}: ${contentType}</span>`
+                      /*html*/`<br/> --> <span class="error">${T('settings.image.error.contentType')}: ${contentType}</span>`
                   }
                 } else {
                   console.error("[ERROR] Unexpected Response Status: %d", response.status)
                   $prompt.innerHTML +=
-                    `<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`
+                    /*html*/`<br/> --> <span class="error">${T('settings.image.error')}: ${response.status}</span>`
                 }
               }).catch((error) => {
                 console.error("[ERROR] Unexpected Error: %o", error)
                 $prompt.innerHTML +=
-                  `<br/> --> <span class="error">${T('settings.image.error')}: ${error}</span>`
+                  /*html*/`<br/> --> <span class="error">${T('settings.image.error')}: ${error}</span>`
               })
           }
           
@@ -537,7 +537,7 @@ class Settings {
       },
       more: {
         renderWithin(div) {
-          div.innerHTML = `
+          div.innerHTML = /*html*/`
             <div class="share">
               <div class="label">
                 <span>${T('settings.share')}:</span>
@@ -594,7 +594,7 @@ class Settings {
 
           function renderUpgrade() {
             return !(activatedVersion > APP_VERSION) ? ''
-                : `<button id="upgrade">${T('app.upgrade')} ${activatedVersion}</button>`
+                : /*html*/`<button id="upgrade">${T('app.upgrade')} ${activatedVersion}</button>`
           }
           $E('.app #upgrade')?.addEventListener('click', () => window.location.reload())
         }
@@ -606,14 +606,14 @@ class Settings {
     function init() {
       $overlay = $E('div.overlay')
       $view = appendElement('div', {className: `settings-view ${LOCALE} hidden`}, $overlay)
-      $view.innerHTML = `
+      $view.innerHTML = /*html*/`
         <div class="settings-content"></div>
         <div class="settings-tabs">` +
-      Object.keys(TABS).reduce((html, tab) => html + `
+      Object.keys(TABS).reduce((html, tab) => html + /*html*/`
           <div class="settings-tab ${tab}">
             <div class="tab-icon"></div>
             <div class="tab-label">${T('settings.tab-label.' + tab)}</div>
-          </div>`, '') + `
+          </div>`, '') + /*html*/`
         </div>
         <div class="settings-pad"></div>
       `
