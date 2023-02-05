@@ -9,7 +9,7 @@ class LabelledSwitch extends HTMLInputElement {
     ]
   }
 
-  static useInternalStyleshhet = true
+  static useInlineStyle = false
 
   static #INPUT = 0
   static #COMPANION = 1
@@ -36,13 +36,13 @@ class LabelledSwitch extends HTMLInputElement {
   static #template
 
   static register() {
-    if(LabelledSwitch.useInternalStyleshhet) {
+    if(! LabelledSwitch.useInlineStyle) {
       document.head.appendChild(LabelledSwitch.#styleElement(`
         /* Using fake ID selectors to increase CSS declaration specificity */
-        input[is="labelled-switch"]:not(#fake-id-1#fake-id-2#fake-id-3).style-captured ${LabelledSwitch.#cssTextOf(
+        :not(#fake-id-1#fake-id-2#fake-id-3) > input[is="labelled-switch"].style-captured ${LabelledSwitch.#cssTextOf(
           LabelledSwitch.#styles[LabelledSwitch.#INPUT]
         )}
-        span:not(#fake-id-1#fake-id-2#fake-id-3).labelled-switch-companion ${LabelledSwitch.#cssTextOf(
+        :not(#fake-id-1#fake-id-2#fake-id-3) > span.labelled-switch-companion ${LabelledSwitch.#cssTextOf(
           LabelledSwitch.#styles[LabelledSwitch.#COMPANION]
         )}
       `.replaceAll(/        /g, '')))
@@ -253,19 +253,19 @@ span.container > .middle-pad {
     // console.debug("[DEBUG] input[name=%o] captured style: %s", this.name, JSON.stringify(this.#style))
 
     this.type = 'checkbox'
-    if(LabelledSwitch.useInternalStyleshhet) {
-      this.classList.add('style-captured')
-    } else {
+    if(LabelledSwitch.useInlineStyle) {
       Object.assign(this.style, LabelledSwitch.#styles[LabelledSwitch.#INPUT])
+    } else {
+      this.classList.add('style-captured')
     }
 
     this.#shadow = this.insertAdjacentElement('beforebegin', document.createElement('span')).attachShadow({mode: 'open'})
 
     // this.#shadow.host :: the companion <span>
-    if(LabelledSwitch.useInternalStyleshhet) {
-      this.#shadow.host.classList.add('labelled-switch-companion')
-    } else {
+    if(LabelledSwitch.useInlineStyle) {
       Object.assign(this.#shadow.host.style, LabelledSwitch.#styles[LabelledSwitch.#COMPANION])
+    } else {
+      this.#shadow.host.classList.add('labelled-switch-companion')
     }
 
     const fragment = LabelledSwitch.#template.cloneNode(true)
